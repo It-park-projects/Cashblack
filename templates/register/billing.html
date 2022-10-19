@@ -1,0 +1,43 @@
+{% extends  'register/base.html' %}
+{% load static %}
+{% block title %} <title>Billing</title> {% endblock %}
+
+{% block content %}
+
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h4 class="card-title">Billing</h4>
+            </div>
+            <div class="card-body">
+                <table id="datatable-buttons" class="table table-bordered  dt-responsive nowrap w-100">
+                    <thead class="table-dark">
+                    <tr class="text-center">
+                        <th>id</th>
+                        <th >Do'kon nomi</th>
+                        <th >Summasi</th>
+                    </tr>
+                    </thead>
+                    {% for item in my_doc %}
+                    <tr>
+                        <td class="text-center">{{forloop.counter}}</td>
+                        <td>{{item.title}}</td>
+                        <td class="text-center">{{item.date|date:'Y-m-d'}}</td>
+                        <td class="text-center">
+                            <a href="#"  class="btn btn-primary waves-effect btn-label waves-light">
+                                <i class="bx bx-download label-icon"></i> 
+                                Yuklash
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </table>
+            </div>
+        </div>
+        <!-- end cardaa -->
+    </div> <!-- end col -->
+</div>
+
+
+{% endblock %}
