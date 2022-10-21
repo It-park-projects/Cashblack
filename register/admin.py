@@ -1,3 +1,4 @@
+from atexit import register
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 from register.models import *
@@ -16,3 +17,5 @@ class NewMyUser(UserAdmin):
         (None,{'fields':('phone','password1','password2')}),
     )
 admin.site.register(CustumUsers,NewMyUser)
+
+admin.site.register(Cataegor)

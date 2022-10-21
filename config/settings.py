@@ -33,6 +33,11 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt',
     'rest_framework_simplejwt.token_blacklist',
 
+    # bootsratapp
+    "crispy_forms",
+    "crispy_bootstrap5",
+
+
     # app
     'register',
 ]
@@ -183,3 +188,9 @@ CORS_ALLOWED_ORIGINS = [
     "http://192.168.137.22:8080",
     'http://34.73.83.172'
 ]
+
+
+
+CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
+
+CRISPY_TEMPLATE_PACK = "bootstrap5"

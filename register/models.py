@@ -1,4 +1,5 @@
 from enum import unique
+from tkinter.tix import Tree
 from django.db import models
 from django.contrib.auth.models import AbstractUser,BaseUserManager
 
@@ -31,3 +32,13 @@ class CustumUsers(AbstractUser):
     objects = MyUserManager()
     USERNAME_FIELD = 'phone'
     REQUIRED_FIELDS = []
+
+
+
+class Cataegor(models.Model):
+    title = models.CharField(max_length=250)
+    logo = models.ImageField(upload_to='logo_categor/',null=True,blank=True)
+    create_date = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.title
