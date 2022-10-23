@@ -39,8 +39,9 @@ INSTALLED_APPS = [
 
 
     # app
-    'register',
+    'regsiter',
     'authen',
+    'shops',
 ]
 
 MIDDLEWARE = [
@@ -139,8 +140,8 @@ CKEDITOR_UPLOAD_PATH = "uploads/"
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+AUTH_USER_MODEL = 'regsiter.CustumUsers'
 
-AUTH_USER_MODEL = 'register.CustumUsers'
 LOGIN_REDIRECT_URL = 'sigin_in'
 LOGIN_URL='sigin_in'
 

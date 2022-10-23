@@ -8,8 +8,9 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/token/', jwt_views.TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('api/token/refresh/', jwt_views.TokenRefreshView.as_view(), name='token_refresh'),
-    path('admin_panel/',include('register.urls')),
+    path('admin_panel/',include('regsiter.urls')),
     path('api/',include('authen.urls')),
+    path('api/',include('shops.urls')),
     
 ]
 if settings.DEBUG:

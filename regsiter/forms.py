@@ -1,21 +1,21 @@
 from unicodedata import category
 from django.contrib.auth.forms import UserCreationForm,UserChangeForm
 from django import forms
-from register.models import *
+from regsiter.models import *
 
-from register.models import *
+from regsiter.models import *
 from django import forms 
 
 class CreasteUser(UserCreationForm):
     class Meta(UserCreationForm):
         model = CustumUsers
-        fields = ('username','first_name','last_name','phone','password')
+        fields = ('username','first_name','last_name','code_s','password')
 
 
 class ChangeUser(UserChangeForm):
     class Meta(UserChangeForm):
         model = CustumUsers
-        fields = ('username','first_name','last_name','phone','password')
+        fields = ('username','first_name','last_name','code_s','password')
 
 class CreateCatgeorForms(forms.ModelForm):
     class Meta:

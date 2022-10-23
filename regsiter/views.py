@@ -5,8 +5,8 @@ from django.views.generic.edit import UpdateView,CreateView
 from django.views.generic import ListView,DeleteView,DetailView
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.urls import reverse_lazy
-from register.models import *
-from register.forms import *
+from regsiter.models import *
+from regsiter.forms import *
 
 
 def sigin_in(request):

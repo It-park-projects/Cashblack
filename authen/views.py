@@ -1,5 +1,8 @@
+import requests
+import random
 from rest_framework.response import Response
 from rest_framework import status,authentication,permissions,filters
+from django.contrib.auth import authenticate,login,logout
 from rest_framework import permissions, status
 from rest_framework.views import APIView
 from rest_framework.generics import GenericAPIView
@@ -12,10 +15,13 @@ from rest_framework.parsers import JSONParser
 from django.contrib.auth import authenticate
 from django.contrib.auth.models import User,Group
 from django.contrib.auth import logout
-import requests
 from authen.renderers import UserRenderers
-from authen.serializers import UserLoginSerializers
-from register.models import CustumUsers
+from authen.serializers import *
+from authen.servise import send_message
+from authen.utilis import *
+from regsiter.models import *
+
+
 
 
 # token Olish
@@ -26,37 +32,102 @@ def get_token_for_user(user):
         'accsess':str(refresh.access_token)
     }
 
+class AllGroupsViews(APIView):
+    render_classes = [UserRenderers]
+    def get(self, request, *args, **kwargs):
+        gorups = Group.objects.all()
+        serializers = AllGroupsSerializers(gorups,many=True)
+        return Response(serializers.data,status=status.HTTP_200_OK) 
 
 class UserSiginUpViews(APIView):
     render_classes = [UserRenderers]
+    def get(self,request,format=None):
+        groups = Group.objects.all()
+        serializers = AllGroupsSerializers(groups,many=True)
+        return Response(serializers.data,status=status.HTTP_201_CREATED)
+    def post(self,request,format=None):
+        serializers = UserSiginUpserializers(data=request.data)
+        if serializers.is_valid(raise_exception=True):
+            serializers.save()
+            return Response({'msg':'success'},status=status.HTTP_201_CREATED)
+        return Response(serializers.errors,status=status.HTTP_400_BAD_REQUEST)
+    # def post(self,request):
+    #     username = request.data['username']
+    #     password= request.data['password']
+    #     if username == "":
+    #         context = {"Tel Raqam Kiritilmadi"}
+    #         return Response(context,status=status.HTTP_401_UNAUTHORIZED)
+    #     us = CustumUsers.objects.filter(username=username)
+    #     if len(us)!=0:
+    #         return Response({'error':"Telefon raqam mavjud"},status=status.HTTP_203_NON_AUTHORITATIVE_INFORMATION) 
+    #         # user = authenticate(request,username=username)
+    #         # if user is not None:
+    #         #     tokes =get_token_for_user(user)
+    #         #     return Response({'token':tokes},status=status.HTTP_200_OK)
+    #         # else:
+    #         #     return Response({'error':"Telefon raqam xato"},status=status.HTTP_203_NON_AUTHORITATIVE_INFORMATION)
+              
+    #     my_user = CustumUsers.objects.create(username=username)
+    #     my_user.set_password(password)
+    #     my_user.save()
+    #     toke =get_token_for_user(my_user)   
+    #     return Response({'msg':toke},status=status.HTTP_200_OK)
+    def put(self,request):
+        us = CustumUsers.objects.filter(id=request.user.id)[0]
+        code_s = str(random.randint(10000,99999))
+        us.code_s=code_s
+        us.save()
+        send_message(us.username,us.code_s)
+        return Response({'message':'send_sms'})
+
+class UserSiginInViews(APIView):
+    render_classes = [UserRenderers]
     def post(self,request,format=None):
         serializers = UserLoginSerializers(data=request.data, partial=True)
-
         if serializers.is_valid(raise_exception=True):
-            username = serializers.data['username']
-            user_check = CustumUsers.objects.filter(username=username)
-            if len(user_check)!=0:
+            username = request.data['username']
+            password = request.data['password']
+            user = authenticate(username=username,password=password)
+            if user is not None:
+                token = get_token_for_user(user)
+                return Response({'token':token,'message':'Login success'},status=status.HTTP_200_OK)
+            else:
+                return Response({'error':{'none_filed_error':['Email or password is not valid']}},status=status.HTTP_404_NOT_FOUND)
+        return Response(serializers.errors,status=status.HTTP_400_BAD_REQUEST)
 
-                url = "http://91.204.239.44/broker-api/send"
-                params = {
-                    "messages":
-                         [
-                         {
-                          "recipient":f"{username}",
-                          "message-id":"abc000000001",
 
-                             "sms":{
-                        
-                               "originator": "3700",
-                             "content": {
-                              "text": "Salom"
-                              }
-                              }
-                                 }
-                             ]
-                        }
-            username = "assistant"
-            password = "rA@8e3vE)@3X"
-            response = requests.post(url, auth=(username, password), json=params)
-            print(response)
-        return Response(status=status.HTTP_204_NO_CONTENT)
+    
+
+class CheckSms(APIView):
+    render_classes = [UserRenderers]
+    perrmisson_class = [IsAuthenticated]
+
+    def post(self,request):
+        code = request.data['code_s']
+        if code =='':
+            context = {"Kod Kiritilmadi"}
+            return Response(context,status=status.HTTP_401_UNAUTHORIZED)
+        user = CustumUsers.objects.filter(id=request.user.id)[0]
+        if code==user.code_s:
+            context={'success'}
+            return Response(context,status=status.HTTP_200_OK)
+
+# class UserLoginViews(APIView):
+#     render_classes = [UserRenderers]
+#     def post(self,request):
+#         code = request.data['phone']
+
+def check_sms(request):
+    us = User.objects.filter(id=request.user.id)[0]
+    password = str(random.randint(10000,99999))
+    us.code_c=password
+    us.save()
+    send_message(us.username,us.code_s)
+    return Response({'message':'send_sms'})
+
+class UserProfilesViews(APIView):
+    render_classes = [UserRenderers]
+    perrmisson_class = [IsAuthenticated]
+    def get(self,request,format=None):
+        serializer = UserPorfilesSerializers(request.user)
+        return Response(serializer.data,status=status.HTTP_200_OK)
