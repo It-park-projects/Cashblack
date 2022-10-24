@@ -64,3 +64,5 @@ class DeleteCategorViews(DeleteView):
     model = Cataegor
     template_name = 'register/delete_categor.html'
     success_url = reverse_lazy('all_ctageor')
+
+

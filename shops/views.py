@@ -33,6 +33,19 @@ class AllCategorViews(APIView):
         serializers = AllCategorSerializers(categor,many=True)
         return Response(serializers.data,status=status.HTTP_200_OK)
 
+class AllProvinceViews(APIView):
+    def get(self, request, *args, **kwargs):
+        categor = Province.objects.all()
+        serializers = AllProviseSerializers(categor,many=True)
+        return Response(serializers.data,status=status.HTTP_200_OK)
+
+class AllDistricViews(APIView):
+    def get(self, request, *args, **kwargs):
+        categor = Distric.objects.all()
+        serializers = AllDistricSerializers(categor,many=True)
+        return Response(serializers.data,status=status.HTTP_200_OK)
+
+
 class UserShops(APIView):
     render_classes = [UserRenderers]
     perrmisson_class = [IsAuthenticated]

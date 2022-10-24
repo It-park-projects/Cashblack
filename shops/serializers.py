@@ -16,19 +16,19 @@ class AllProviseSerializers(serializers.ModelSerializer):
         fields = '__all__'
 
 class AllDistricSerializers(serializers.ModelSerializer):
-    provice = AllProviseSerializers(read_only=True)
+    provie_id = AllProviseSerializers(read_only=True)
     class Meta:
         model = Distric
-        fields ='__all__'
+        fields =['id','name','provie_id']
 
 
 class ShopsSerializers(serializers.ModelSerializer):
     categor_id = AllCategorSerializers(read_only=True)
     provinse_id = AllProviseSerializers(read_only=True)
     distrik_id = AllDistricSerializers(read_only=True)
-    auth = UserPorfilesSerializers(read_only=True)
+    user_id = UserPorfilesSerializers(read_only=True)
     class Meta:
         model = Shops
-        fields = ['id','name','cash_bak','categor_id','provinse_id','distrik_id','auth',]
+        fields = ['id','name_shops','brand_img','cashback','categor_id','provinse_id','distrik_id','user_id',]
     def create(self, validated_data):
         return Shops.objects.create(**validated_data)
