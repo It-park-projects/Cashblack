@@ -49,29 +49,31 @@ class UserSiginUpViews(APIView):
         serializers = UserSiginUpserializers(data=request.data)
         if serializers.is_valid(raise_exception=True):
             serializers.save()
-            return Response({'msg':'success'},status=status.HTTP_201_CREATED)
+            toke =get_token_for_user(serializers)   
+
+            return Response({'token':toke,'msg':'success'},status=status.HTTP_201_CREATED)
         return Response(serializers.errors,status=status.HTTP_400_BAD_REQUEST)
-    # def post(self,request):
-    #     username = request.data['username']
-    #     password= request.data['password']
-    #     if username == "":
-    #         context = {"Tel Raqam Kiritilmadi"}
-    #         return Response(context,status=status.HTTP_401_UNAUTHORIZED)
-    #     us = CustumUsers.objects.filter(username=username)
-    #     if len(us)!=0:
-    #         return Response({'error':"Telefon raqam mavjud"},status=status.HTTP_203_NON_AUTHORITATIVE_INFORMATION) 
-    #         # user = authenticate(request,username=username)
-    #         # if user is not None:
-    #         #     tokes =get_token_for_user(user)
-    #         #     return Response({'token':tokes},status=status.HTTP_200_OK)
-    #         # else:
-    #         #     return Response({'error':"Telefon raqam xato"},status=status.HTTP_203_NON_AUTHORITATIVE_INFORMATION)
+    def post(self,request):
+        username = request.data['username']
+        password= request.data['password']
+        if username == "":
+            context = {"Tel Raqam Kiritilmadi"}
+            return Response(context,status=status.HTTP_401_UNAUTHORIZED)
+        us = CustumUsers.objects.filter(username=username)
+        if len(us)!=0:
+            return Response({'error':"Telefon raqam mavjud"},status=status.HTTP_203_NON_AUTHORITATIVE_INFORMATION) 
+            # user = authenticate(request,username=username)
+            # if user is not None:
+            #     tokes =get_token_for_user(user)
+            #     return Response({'token':tokes},status=status.HTTP_200_OK)
+            # else:
+            #     return Response({'error':"Telefon raqam xato"},status=status.HTTP_203_NON_AUTHORITATIVE_INFORMATION)
               
-    #     my_user = CustumUsers.objects.create(username=username)
-    #     my_user.set_password(password)
-    #     my_user.save()
-    #     toke =get_token_for_user(my_user)   
-    #     return Response({'msg':toke},status=status.HTTP_200_OK)
+        my_user = CustumUsers.objects.create(username=username)
+        my_user.set_password(password)
+        my_user.save()
+        toke =get_token_for_user(my_user)   
+        return Response({'msg':toke},status=status.HTTP_200_OK)
     def put(self,request):
         us = CustumUsers.objects.filter(id=request.user.id)[0]
         code_s = str(random.randint(10000,99999))
@@ -89,8 +91,8 @@ class UserSiginInViews(APIView):
             password = request.data['password']
             user = authenticate(username=username,password=password)
             if user is not None:
-                token = get_token_for_user(user)
-                return Response({'token':token,'message':'Login success'},status=status.HTTP_200_OK)
+                tokens = get_token_for_user(user)
+                return Response({'token':tokens,'message':'Login success'},status=status.HTTP_200_OK)
             else:
                 return Response({'error':{'none_filed_error':['Email or password is not valid']}},status=status.HTTP_404_NOT_FOUND)
         return Response(serializers.errors,status=status.HTTP_400_BAD_REQUEST)
@@ -111,6 +113,9 @@ class CheckSms(APIView):
         if code==user.code_s:
             context={'success'}
             return Response(context,status=status.HTTP_200_OK)
+        else:
+            return Response({'error':'parol xato'})
+
 
 # class UserLoginViews(APIView):
 #     render_classes = [UserRenderers]

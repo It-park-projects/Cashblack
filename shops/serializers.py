@@ -29,6 +29,6 @@ class ShopsSerializers(serializers.ModelSerializer):
     auth = UserPorfilesSerializers(read_only=True)
     class Meta:
         model = Shops
-        fields = ['id','name','cash_bak','brands','categor_id','provinse_id','distrik_id','auth',]
+        fields = ['id','name','cash_bak','categor_id','provinse_id','distrik_id','auth',]
     def create(self, validated_data):
         return Shops.objects.create(**validated_data)
