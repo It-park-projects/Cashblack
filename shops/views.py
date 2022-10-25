@@ -59,3 +59,17 @@ class UserShops(APIView):
             serializers.save()
             return Response({'msg':'Create Sucsess'},status=status.HTTP_201_CREATED)
         return Response(serializers.errors,status=status.HTTP_400_BAD_REQUEST)
+
+class ShopsUpdateViews(APIView):
+    render_classes = [UserRenderers]
+    perrmisson_class = [IsAuthenticated]
+    def get(self,request,pk,format=None):
+        shop = Shops.objects.filter(id=pk)
+        serializers = ShopsSerializers(shop,many=True)
+        return Response(serializers.data,status=status.HTTP_200_OK)
+    def put(self,request,pk,format=None):
+        serializers = ShopsSerializers(instance=Shops.objects.filter(id=pk)[0],data=request.data,partial =True)
+        if serializers.is_valid(raise_exception=True):
+            serializers.save()
+            return Response({'message':"success update"},status=status.HTTP_200_OK)
+        return Response({'error':'update error data'},status=status.HTTP_400_BAD_REQUEST)
