@@ -8,9 +8,5 @@ urlpatterns = [
     path('all_categor_views/',AllCategorViews.as_view()),
     path('all_province_view/',AllProvinceViews.as_view()),
     path('all_distrik_view/',AllDistricViews.as_view()),
-    path('create_clients/',ClientCreateViews.as_view()),
-    path('update_clients/<int:pk>/',ClientsUpdateViews.as_view()),
-
-    
-
+    path('cashbak_create/',ClientSellView.as_view()),
 ]

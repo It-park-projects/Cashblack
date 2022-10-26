@@ -2,25 +2,26 @@ from rest_framework import serializers
 from django.contrib.auth.hashers import make_password
 from regsiter.models import *
 from django.contrib.auth.models import User
-from authen.serializers import *
+from shops.models import Cashbacks
 
+class AllUserSerializers(serializers.ModelSerializer):
+    class Meta:
+        model = CustumUsers
+        fields = '__all__'
 
 class AllCategorSerializers(serializers.ModelSerializer):
     class Meta:
         model = Cataegor
         fields = '__all__'
-
 class AllProviseSerializers(serializers.ModelSerializer):
     class Meta:
         model = Province
         fields = '__all__'
-
 class AllDistricSerializers(serializers.ModelSerializer):
     provie_id = AllProviseSerializers(read_only=True)
     class Meta:
         model = Distric
         fields =['id','name','provie_id']
-
 
 class ShopsAllSerializers(serializers.ModelSerializer):
     categor_id = AllCategorSerializers(read_only=True)
@@ -47,31 +48,33 @@ class ShopsSerializers(serializers.ModelSerializer):
         instance.save() 
         return instance
 
-class CustomUserClientsSerializers(serializers.ModelSerializer):
-    class Meta:
-        model = CustumUsers
-        fields = ['id','first_name','last_name','username','groups','shops_id',]
-    def create(self,validate_date):
-        client_create = CustumUsers.objects.create_user(
-            first_name = validate_date['first_name'],
-            last_name = validate_date['last_name'],
-            username = validate_date['username'],
-            
-        )
 
-        client_create.set_password(validate_date['password'])
-        client_create.shops_id.add(self.context.get('user_id'))
-        for i in validate_date['groups']:
-            client_create.groups.add(i.id)
-        client_create.save()
-        
-        return client_create
-    def update(self,instance,validate_data):
-        instance.first_name = validate_data.get('first_name',instance.first_name)
-        instance.last_name = validate_data.get('last_name',instance.last_name)
-        instance.username = validate_data.get('username',instance.username)
-        instance.set_password(validate_data.get('password',instance.password))
-        instance.groups.set(validate_data.get('groups',instance.groups)) 
-        instance.shops_id.set(self.context.get('user_id'))
-        instance.save()
-        return instance
+class AllCashbakSerializers(serializers.ModelSerializer):
+    shops = ShopsAllSerializers(read_only=True)
+    client = AllUserSerializers(read_only=True)
+    class Meta:
+        model = Cashbacks
+        fields = ['id','price','shops','client','cashbak','date']
+
+class CrudCashbakSerializers(serializers.ModelSerializer):
+    
+    class Meta:
+        model = Cashbacks
+        fields = ['id','price','shops','client','cashbak','date']
+    def create(self, validated_data):
+        get_user = self.context.get('user_id')
+        # split_price = validated_data['price'].split(' ','')
+        # try:
+        get_shop_cashback = Shops.objects.get(user_id = get_user)
+        # except Shops.DoesNotExist():
+        #     get_shop_cashback = None
+        cashback_divide = int(validated_data['price']) * (get_shop_cashback.cashback/100)
+        create_client_sell = Cashbacks.objects.create(
+            price = validated_data['price'],
+            cashbak = cashback_divide,
+            shops = get_shop_cashback,
+            client = self.context.get('user_id')
+        )
+        create_client_sell.save()
+        # return create_client_sell
+        return validated_data['price'] 
