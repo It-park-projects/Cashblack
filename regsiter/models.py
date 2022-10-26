@@ -32,8 +32,8 @@ class Shops(models.Model):
         return self.name_shops
 class CustumUsers(AbstractUser):
     code_s = models.CharField(max_length=100,null=True,blank=True,unique=True)
-    shops_id = models.ManyToManyField(Shops,null=True,blank=True)
-
+    shops_id = models.ManyToManyField(Shops,blank=True)
+    appSignature = models.CharField(max_length=250,null=True,blank=True)
 
 
 
