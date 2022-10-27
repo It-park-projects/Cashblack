@@ -8,5 +8,5 @@ urlpatterns = [
     path('all_categor_views/',AllCategorViews.as_view()),
     path('all_province_view/',AllProvinceViews.as_view()),
     path('all_distrik_view/',AllDistricViews.as_view()),
-    path('cashbak_create/<int:barcode_id>/',ClientSellView.as_view()),
+    path('cashbak_create/<int:barcode_id>/<str:is_cashback>/',ClientSellView.as_view()),
 ]

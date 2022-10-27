@@ -1,8 +1,9 @@
 from rest_framework import serializers
 from django.contrib.auth.hashers import make_password
+
 from regsiter.models import *
 from django.contrib.auth.models import User
-from shops.models import Cashbacks
+from shops.models import Cashbacks, SaveCashback
 
 class AllUserSerializers(serializers.ModelSerializer):
     class Meta:
@@ -57,25 +58,28 @@ class AllCashbakSerializers(serializers.ModelSerializer):
         fields = ['id','price','shops','client','cashbak','date']
 
 class CrudCashbakSerializers(serializers.ModelSerializer):
-    
+    price = serializers.CharField(max_length=250)
     class Meta:
         model = Cashbacks
         fields = ['id','price','shops','client','cashbak','date']
     def create(self, validated_data):
-        get_user = self.context.get('user_id')
-        try:
-            get_shop_cashback = Shops.objects.get(id = get_user.shops_id)
-        except Shops.DoesNotExist:
-            get_shop_cashback = None
-        # cashback_divide = int(validated_data['price']) * (get_shop_cashback.cashback/100)
-        print(get_user)
-        print(get_shop_cashback)
-        # print(cashback_divide)
-        # create_client_sell = Cashbacks.objects.create(
-        #     cashbak = cashback_divide,
-        #     shops = get_shop_cashback,
-        #     client = self.context.get('user_id')
-        # )
-        # create_client_sell.save()
-        # return create_client_sell 
-        return 'sdfsfds'
+        if self.context.is_cashback == False:
+            get_user = self.context.get('user_id')
+            get_number = str(validated_data['price'])
+            replace_number = get_number.replace(' ','')
+            try:
+                get_shop_cashback = Shops.objects.get(user_id = get_user)
+            except Shops.DoesNotExist:
+                get_shop_cashback = None
+            cashback_divide = 0
+            cashback_divide = int(replace_number) * (get_shop_cashback.cashback/100)    
+            create_client_sell = Cashbacks.objects.create(
+                price = replace_number,
+                # cashbak = cashback_divide,
+                shops = get_shop_cashback,
+                client = self.context.get('client_id')
+            )
+            create_client_sell.save()
+            print(SaveCashback.objects.filter(cashbak_id = ))
+
+        return create_client_sell 
