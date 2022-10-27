@@ -19,7 +19,7 @@ from django.contrib.auth import logout
 from authen.renderers import UserRenderers
 from authen.serializers import *
 from authen.servise import send_message
-from authen.utilis import *
+
 from regsiter.models import *
 from shops.serializers import *
 from authen.serializers import *
@@ -50,11 +50,11 @@ class UserShops(APIView):
     render_classes = [UserRenderers]
     perrmisson_class = [IsAuthenticated]
     def get(self, request, *args, **kwargs):
-        shops = Shops.objects.filter(auth=request.user.id)
-        serializers = ShopsSerializers(shops,many=True)
+        shops = Shops.objects.filter(user_id=request.user.id)
+        serializers = ShopsAllSerializers(shops,many=True)
         return Response(serializers.data,status=status.HTTP_200_OK) 
     def post(self,request,format=None):
-        serializers = ShopsSerializers(data=request.data)
+        serializers = ShopsSerializers(data=request.data,context={'user_id':request.user})
         if serializers.is_valid(raise_exception=True):
             serializers.save()
             return Response({'msg':'Create Sucsess'},status=status.HTTP_201_CREATED)
@@ -73,3 +73,16 @@ class ShopsUpdateViews(APIView):
             serializers.save()
             return Response({'message':"success update"},status=status.HTTP_200_OK)
         return Response({'error':'update error data'},status=status.HTTP_400_BAD_REQUEST)
+
+class ClientCreateViews(APIView):
+    def get(self,request,format=None):
+
+        clients = CustumUsers.objects.filter(groups__in = ['Client'])
+        serializers = ClientSerializers(clients,many=True)
+        return Response(serializers.data,status=status.HTTP_200_OK)
+    def post(self,request,format=None):
+        serializers = CustomUserClientsSerializers(data= request.data)
+        if serializers.is_valid(raise_exception = True):
+            serializers.save()
+            return Response({'msg':'Create Sucsess'},status=status.HTTP_201_CREATED)
+        return Response(serializers.errors,status=status.HTTP_400_BAD_REQUEST)

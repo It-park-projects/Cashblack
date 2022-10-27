@@ -18,7 +18,6 @@ from django.contrib.auth import logout
 from authen.renderers import UserRenderers
 from authen.serializers import *
 from authen.servise import send_message
-from authen.utilis import *
 from regsiter.models import *
 
 
@@ -119,15 +118,6 @@ class CheckSms(APIView):
             return Response(context,status=status.HTTP_200_OK)
         else:
             return Response({'error':'parol xato'})
-
-
-def check_sms(request):
-    us = User.objects.filter(id=request.user.id)[0]
-    password = str(random.randint(10000,99999))
-    us.code_c=password
-    us.save()
-    send_message(us.username,us.code_s)
-    return Response({'message':'send_sms'})
 
 class UserProfilesViews(APIView):
     render_classes = [UserRenderers]
