@@ -3,6 +3,7 @@ from rest_framework import serializers
 from django.contrib.auth.hashers import make_password
 from regsiter.models import *
 from django.contrib.auth.models import User
+from shops.serializers import *
 
 
 class AllGroupsSerializers(serializers.ModelSerializer):
@@ -24,19 +25,38 @@ class UserLoginSerializers(serializers.ModelSerializer):
         fields = ['username','password',]
 
 class UserPorfilesSerializers(serializers.ModelSerializer):
+    groups = AllGroupsSerializers(read_only = True,many=True)
+    shops_id = ShopsAllSerializers(read_only = True,many=True)
     class Meta:
         model = CustumUsers
-        fields = ['id','username','first_name','last_name',]
+        fields = ['id','username','first_name','last_name','groups','shops_id',]
 
 class UserUpdateSerializers(serializers.ModelSerializer):
     class Meta:
         model = CustumUsers
         fields = '__all__'
-    def update(self,instance,validated_data):
-        instance.username = validated_data.get('username', instance.username)
-        instance.first_name = validated_data.get('first_name', instance.first_name)
-        instance.last_name = validated_data.get('last_name', instance.last_name)
-        instance.code_s = validated_data.get('phone', instance.code_s)
+    def create(self,validate_date):
+        client_create = CustumUsers.objects.create_user(
+            first_name = validate_date['first_name'],
+            last_name = validate_date['last_name'],
+            username = validate_date['username'],
+            
+        )
+
+        client_create.set_password(validate_date['password'])
+        client_create.shops_id.add(self.context.get('user_id'))
+        for i in validate_date['groups']:
+            client_create.groups.add(i.id)
+        client_create.save()
         
+        return client_create
+    def update(self,instance,validate_data):
+        instance.first_name = validate_data.get('first_name',instance.first_name)
+        instance.last_name = validate_data.get('last_name',instance.last_name)
+        instance.username = validate_data.get('username',instance.username)
+        instance.set_password(validate_data.get('password',instance.password))
+        instance.groups.set(validate_data.get('groups',instance.groups)) 
+        instance.shops_id.set(self.context.get('user_id'))
+        instance.code_s = validate_data.get('code_s',instance.code_s)
         instance.save()
         return instance

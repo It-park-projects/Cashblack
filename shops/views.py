@@ -19,10 +19,9 @@ from django.contrib.auth import logout
 from authen.renderers import UserRenderers
 from authen.serializers import *
 from authen.servise import send_message
-
 from regsiter.models import *
 from shops.serializers import *
-from authen.serializers import *
+
 
 
 class AllCategorViews(APIView):
@@ -54,7 +53,7 @@ class UserShops(APIView):
         serializers = ShopsAllSerializers(shops,many=True)
         return Response(serializers.data,status=status.HTTP_200_OK) 
     def post(self,request,format=None):
-        serializers = ShopsSerializers(data=request.data,context={'user_id':request.user})
+        serializers = ShopsSerializers(data=request.data,context={'user_id':request.user.id})
         if serializers.is_valid(raise_exception=True):
             serializers.save()
             return Response({'msg':'Create Sucsess'},status=status.HTTP_201_CREATED)
@@ -77,11 +76,33 @@ class ShopsUpdateViews(APIView):
 class ClientCreateViews(APIView):
     def get(self,request,format=None):
         clients = CustumUsers.objects.filter(groups__in = ['Client'])
-        serializers = ClientSerializers(clients,many=True)
+        serializers = UserPorfilesSerializers(clients,many=True)
         return Response(serializers.data,status=status.HTTP_200_OK)
     def post(self,request,format=None):
-        serializers = CustomUserClientsSerializers(data= request.data)
+        try:
+            get_shops = Shops.objects.get(user_id = request.user.id)
+        except Shops.DoesNotExist:
+            get_shops = None
+        serializers = UserUpdateSerializers(data= request.data,context={'user_id':get_shops})
         if serializers.is_valid(raise_exception = True):
             serializers.save()
             return Response({'msg':'Create Sucsess'},status=status.HTTP_201_CREATED)
         return Response(serializers.errors,status=status.HTTP_400_BAD_REQUEST)
+    
+class ClientsUpdateViews(APIView):
+    render_classes = [UserRenderers]
+    perrmisson_class = [IsAuthenticated]
+    def get(self,request,pk,format=None):
+        shop = CustumUsers.objects.filter(id=pk)
+        serializers = UserPorfilesSerializers(shop,many=True)
+        return Response(serializers.data,status=status.HTTP_200_OK)
+    def put(self,request,pk,format=None):
+        try:
+            get_shops = Shops.objects.get(user_id = request.user.id)
+        except Shops.DoesNotExist:
+            get_shops = None
+        serializers = UserUpdateSerializers(instance=CustumUsers.objects.filter(id=pk)[0],data=request.user.id,partial =True,context={'user_id':get_shops})
+        if serializers.is_valid(raise_exception=True):
+            serializers.save()
+            return Response({'message':"success update"},status=status.HTTP_200_OK)
+        return Response({'error':'update error data'},status=status.HTTP_400_BAD_REQUEST)
