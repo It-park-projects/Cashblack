@@ -68,7 +68,7 @@ class ShopsUpdateViews(APIView):
         serializers = ShopsSerializers(shop,many=True)
         return Response(serializers.data,status=status.HTTP_200_OK)
     def put(self,request,pk,format=None):
-        serializers = ShopsSerializers(instance=Shops.objects.filter(id=pk)[0],data=request.data,partial =True)
+        serializers = ShopsSerializers(instance=Shops.objects.filter(id=pk)[0],data=request.user.id,partial =True)
         if serializers.is_valid(raise_exception=True):
             serializers.save()
             return Response({'message':"success update"},status=status.HTTP_200_OK)
