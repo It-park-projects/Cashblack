@@ -50,7 +50,7 @@ class CustumUsers(AbstractUser):
         self.barcode.save(f'{self.username}.png',File(buffer),save=False)
         return super().save(*args,**kwargs)
     def send_sms(self,*args,**kwargs,):
-        code_s = str(random.randint(10000,99999))
+        code_s = str(random.randint(10000,99999)) 
         send_message(self.username,code_s)
         return code_s
 
