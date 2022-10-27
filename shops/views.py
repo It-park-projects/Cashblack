@@ -76,7 +76,6 @@ class ShopsUpdateViews(APIView):
 
 class ClientCreateViews(APIView):
     def get(self,request,format=None):
-
         clients = CustumUsers.objects.filter(groups__in = ['Client'])
         serializers = ClientSerializers(clients,many=True)
         return Response(serializers.data,status=status.HTTP_200_OK)
