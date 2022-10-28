@@ -11,9 +11,6 @@ class AllGroupsSerializers(serializers.ModelSerializer):
         model = Group
         fields = '__all__'
 
-
-
-
 class UserSiginUpserializers(serializers.ModelSerializer):
     groups = AllGroupsSerializers(read_only=True, many=True)
     class Meta:
@@ -47,8 +44,7 @@ class UserUpdateSerializers(serializers.ModelSerializer):
         client_create.shops_id.add(self.context.get('user_id'))
         for i in validate_date['groups']:
             client_create.groups.add(i.id)
-        client_create.save()
-        
+        client_create.save_product()
         return client_create
     def update(self,instance,validate_data):
         instance.first_name = validate_data.get('first_name',instance.first_name)

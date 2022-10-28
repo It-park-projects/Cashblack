@@ -1,7 +1,11 @@
-from enum import unique
-from tkinter.tix import Tree
 from django.db import models
 from django.contrib.auth.models import AbstractUser,BaseUserManager
+from django.core.files import File
+import barcode
+from barcode.writer import ImageWriter
+from io import BytesIO
+import random
+from authen.servise import send_message
 
 class Cataegor(models.Model):
     title = models.CharField(max_length=250)
@@ -34,8 +38,21 @@ class CustumUsers(AbstractUser):
     code_s = models.CharField(max_length=100,null=True,blank=True,unique=True)
     shops_id = models.ManyToManyField(Shops,blank=True)
     appSignature = models.CharField(max_length=250,null=True,blank=True)
-
-
+    barcode_id = models.CharField(max_length=200,blank=True)
+    barcode=models.ImageField(upload_to='images/',blank=True) 
+    def save_product(self,*args,**kwargs):
+        EAN=barcode.get_barcode_class('ean13')
+        barcode_generator = random.randint(1000000000000, 9999999999999)
+        ean=EAN(str(barcode_generator),writer=ImageWriter())
+        buffer=BytesIO()
+        ean.write(buffer)
+        self.barcode_id = ean
+        self.barcode.save(f'{self.username}.png',File(buffer),save=False)
+        return super().save(*args,**kwargs)
+    def send_sms(self,*args,**kwargs,):
+        code_s = str(random.randint(10000,99999))
+        send_message(self.username,code_s)
+        return code_s
 
 
 

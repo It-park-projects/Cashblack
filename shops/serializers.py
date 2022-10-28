@@ -63,18 +63,19 @@ class CrudCashbakSerializers(serializers.ModelSerializer):
         fields = ['id','price','shops','client','cashbak','date']
     def create(self, validated_data):
         get_user = self.context.get('user_id')
-        # split_price = validated_data['price'].split(' ','')
-        # try:
-        get_shop_cashback = Shops.objects.get(user_id = get_user)
-        # except Shops.DoesNotExist():
-        #     get_shop_cashback = None
-        cashback_divide = int(validated_data['price']) * (get_shop_cashback.cashback/100)
-        create_client_sell = Cashbacks.objects.create(
-            price = validated_data['price'],
-            cashbak = cashback_divide,
-            shops = get_shop_cashback,
-            client = self.context.get('user_id')
-        )
-        create_client_sell.save()
-        # return create_client_sell
-        return validated_data['price'] 
+        try:
+            get_shop_cashback = Shops.objects.get(id = get_user.shops_id)
+        except Shops.DoesNotExist:
+            get_shop_cashback = None
+        # cashback_divide = int(validated_data['price']) * (get_shop_cashback.cashback/100)
+        print(get_user)
+        print(get_shop_cashback)
+        # print(cashback_divide)
+        # create_client_sell = Cashbacks.objects.create(
+        #     cashbak = cashback_divide,
+        #     shops = get_shop_cashback,
+        #     client = self.context.get('user_id')
+        # )
+        # create_client_sell.save()
+        # return create_client_sell 
+        return 'sdfsfds'

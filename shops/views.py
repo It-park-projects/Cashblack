@@ -6,6 +6,7 @@ from authen.renderers import UserRenderers
 from authen.serializers import *
 from regsiter.models import *
 from shops.serializers import *
+from django.shortcuts import get_object_or_404
 
 
 class AllCategorViews(APIView):
@@ -58,12 +59,9 @@ class ShopsUpdateViews(APIView):
 class ClientSellView(APIView):
     render_classes = [UserRenderers]
     perrmisson_class = [IsAuthenticated]
-    def get(self, request, *args, **kwargs):
-        shops = CustumUsers.objects.filter(id=request.user.id)
-        serializers = AllCashbakSerializers(shops,many=True)
-        return Response(serializers.data,status=status.HTTP_200_OK) 
-    def post(self,request,format=None):
-        serializers = CrudCashbakSerializers(data=request.data,context={'user_id':request.user.id})
+    def post(self,request,barcode_id,format=None):
+        check_barcode = get_object_or_404(CustumUsers,barcode_id = barcode_id)
+        serializers = CrudCashbakSerializers(data=request.data,context={'user_id':check_barcode.id})
         if serializers.is_valid(raise_exception=True):
             serializers.save()
             return Response({'msg':'Create Sucsess'},status=status.HTTP_201_CREATED)

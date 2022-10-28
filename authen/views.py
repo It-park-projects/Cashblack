@@ -48,7 +48,8 @@ class UserSiginUpViews(APIView):
             return Response({'error':"Telefon raqam mavjud"},status=status.HTTP_203_NON_AUTHORITATIVE_INFORMATION)      
         my_user = CustumUsers.objects.create(username=username)
         my_user.set_password(password)
-        my_user.save()
+        my_user.save_product()
+        my_user.send_sms()
         toke =get_token_for_user(my_user)   
         return Response({'msg':toke},status=status.HTTP_200_OK)
     def put(self,request):

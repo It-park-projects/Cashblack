@@ -11,7 +11,7 @@ class NewMyUser(UserAdmin):
     model = CustumUsers
     list_display = ['username','first_name','last_name','id',]
     fieldsets = UserAdmin.fieldsets + (
-        (None,{'fields':('code_s','shops_id',)}),
+        (None,{'fields':('code_s','shops_id','barcode_id','barcode',)}),
     )
     add_fieldsets = (
         (None,{'fields':('username','password1','password2')}),
