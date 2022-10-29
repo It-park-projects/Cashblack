@@ -1,3 +1,4 @@
+from lib2to3.pytree import type_repr
 from rest_framework.response import Response
 from rest_framework import permissions, status
 from rest_framework.views import APIView
@@ -61,7 +62,7 @@ class ClientSellView(APIView):
     perrmisson_class = [IsAuthenticated]
     def post(self,request,barcode_id,is_cashback,format=None):
         check_barcode = get_object_or_404(CustumUsers,barcode_id = barcode_id)
-        check_cashbeck_sell = Cashbacks.objects.filter(user_id = check_barcode.id)
+        check_cashbeck_sell = Cashbacks.objects.filter(client = check_barcode).first()
         serializers = CrudCashbakSerializers(data=request.data,context={'client_id':check_barcode, "user_id":request.user.id,'is_cashback':is_cashback,'check_cashbeck_sell':check_cashbeck_sell})
         if serializers.is_valid(raise_exception=True):
             serializers.save()

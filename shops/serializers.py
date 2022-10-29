@@ -61,25 +61,28 @@ class CrudCashbakSerializers(serializers.ModelSerializer):
     price = serializers.CharField(max_length=250)
     class Meta:
         model = Cashbacks
-        fields = ['id','price','shops','client','cashbak','date']
+        fields = ['id','price','shops','client','date']
     def create(self, validated_data):
-        if self.context.is_cashback == False:
-            get_user = self.context.get('user_id')
+            get_user = self.context.get('user_id')        
             get_number = str(validated_data['price'])
+            get_cashbacks = self.context.get('check_cashbeck_sell')
             replace_number = get_number.replace(' ','')
-            try:
-                get_shop_cashback = Shops.objects.get(user_id = get_user)
-            except Shops.DoesNotExist:
-                get_shop_cashback = None
-            cashback_divide = 0
+            try:get_shop_cashback = Shops.objects.get(user_id = get_user)
+            except Shops.DoesNotExist:get_shop_cashback = None
             cashback_divide = int(replace_number) * (get_shop_cashback.cashback/100)    
-            create_client_sell = Cashbacks.objects.create(
-                price = replace_number,
-                # cashbak = cashback_divide,
-                shops = get_shop_cashback,
-                client = self.context.get('client_id')
-            )
-            create_client_sell.save()
-            print(SaveCashback.objects.filter(cashbak_id = ))
-
-        return create_client_sell 
+            create_client_sell = Cashbacks.objects.create(price = replace_number,shops = get_shop_cashback,client = self.context.get('client_id'))
+            if self.context.get('is_cashback') == "False":
+                print(False)
+                if SaveCashback.objects.filter(cashbak_id = get_cashbacks).first() == None:
+                    save_cashback = SaveCashback.objects.create(cashback = cashback_divide,cashbak_id = create_client_sell)
+                else:
+                    try:cashback = SaveCashback.objects.get(cashbak_id = get_cashbacks)
+                    except SaveCashback.DoesNotExist:cashback = None
+                    save_cashback = SaveCashback.objects.filter(cashbak_id = get_cashbacks).update(cashback = cashback.cashback + cashback_divide) 
+            else:
+                print(True)
+                try:cashback = SaveCashback.objects.get(cashbak_id = get_cashbacks)
+                except SaveCashback.DoesNotExist:cashback = None
+                save_cashback = SaveCashback.objects.filter(cashbak_id = get_cashbacks).update(cashback = (cashback.cashback - float(replace_number)) + cashback_divide) 
+            return create_client_sell 
+       
