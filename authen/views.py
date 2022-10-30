@@ -37,7 +37,7 @@ class UserSiginUpViews(APIView):
         groups = Group.objects.all()
         serializers = AllGroupsSerializers(groups,many=True)
         return Response(serializers.data,status=status.HTTP_201_CREATED)
-    def post(self,request):
+    def post(self,request,appSignature):
         username = request.data['username']
         password= request.data['password']
         if username == "":
@@ -46,18 +46,16 @@ class UserSiginUpViews(APIView):
         us = CustumUsers.objects.filter(username=username)
         if len(us)!=0:
             return Response({'error':"Telefon raqam mavjud"},status=status.HTTP_203_NON_AUTHORITATIVE_INFORMATION)      
-        my_user = CustumUsers.objects.create(username=username)
+        my_user = CustumUsers.objects.create(username=username,appSignature=appSignature)
         my_user.set_password(password)
         my_user.save_product()
-        my_user.send_sms()
-        
         toke =get_token_for_user(my_user)  
-
         return Response({'msg':toke},status=status.HTTP_200_OK)
-    def put(self,request):
+    def put(self,request,appSignature):
         us = CustumUsers.objects.filter(id=request.user.id)[0]
         code_s = str(random.randint(10000,99999))
         us.code_s=code_s
+        us.appSignature=appSignature
         us.save()
         send_message(us.username,us.code_s)
         return Response({'message':'send_sms'})
