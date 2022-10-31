@@ -30,6 +30,7 @@ class Shops(models.Model):
     provinse_id = models.ForeignKey(Province,on_delete=models.CASCADE,null=True,blank=True)
     distrik_id = models.ForeignKey(Distric,on_delete=models.CASCADE,null=True,blank=True)
     user_id = models.IntegerField(null=True,blank=True)
+    payment_summ = models.CharField(max_length=250,null=True,blank=True)
     payemnt_date = models.DateField(null=True,blank=True)
     create_date = models.DateTimeField(auto_now_add=True)
     def __str__(self):

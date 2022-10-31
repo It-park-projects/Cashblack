@@ -8,6 +8,8 @@ urlpatterns = [
     path('home_admin/',home_admin,name='home_admin'),
     path('static_information/',static_information,name='static_information'),
     path('billing_sistem/',billling_sistem,name='billing_sistem'),
+    path('create_billing_summ/<int:pk>/',CreateSummPayment.as_view(),name='create_billing_summ'),
+    path('billing_info_shops/<int:id>/',billing_info_shops,name='billing_info_shops'),
     # Catgeor views
     path('all_ctageor/',all_ctageor,name='all_ctageor'),
     path('create_categor/',CreateCategorViews.as_view(),name='create_categor_views'),

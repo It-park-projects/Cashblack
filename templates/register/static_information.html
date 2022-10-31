@@ -14,29 +14,27 @@
                 <table id="datatable-buttons" class="table table-bordered  dt-responsive nowrap w-100">
                     <thead class="table-dark">
                     <tr class="text-center">
-                        <th>id</th>
-                        <th >Do'kon nomi</th>
-                        <th >Kategoriya</th>
-                        <th >Qo'shilgan vaqti</th>
-                        <th>Klient soni</th>
+                        <th style="width: 5%;">id</th>
+                        <th style="width: 20%;">Do'kon nomi</th>
+                        <th style="width: 15%;">Kategoriya</th>
+                        <th style="width: 10%;">Qo'shilgan vaqti</th>
+                        <th style="width: 10%;">Klient soni</th>
+                        <th style="width: 10%;">Keshbekka aloqador savdo summasi</th>
+                        <th style="width: 10%;">Keshbek summasi</th>
 
-                        <th>Keshbekka aloqador savdo summasi</th>
-                        <th >Keshbek summasi</th>
-
-                        <th>Keshbek foizi</th>
+                        <th style="width: 5%;">Keshbek foizi</th>
                     </tr>
                     </thead>
-                    {% for item in my_doc %}
+                    {% for item in objects_list %}
                     <tr>
                         <td class="text-center">{{forloop.counter}}</td>
-                        <td>{{item.title}}</td>
-                        <td class="text-center">{{item.date|date:'Y-m-d'}}</td>
-                        <td class="text-center">
-                            <a href="#"  class="btn btn-primary waves-effect btn-label waves-light">
-                                <i class="bx bx-download label-icon"></i> 
-                                Yuklash
-                            </a>
-                        </td>
+                        <td class="text-center">{{item.name_shops}}</td>
+                        <td class="text-center">{{item.categor_id.title}}</td>
+                        <td class="text-center">{{item.create_date|date:'Y-m-d'}}</td>
+                        <td class="text-center">0</td>
+                        <td class="text-center">100000</td>
+                        <td class="text-center">10000000</td>
+                        <td class="text-center">{{item.cashback}}</td>
                     </tr>
                     {% endfor %}
                 </table>

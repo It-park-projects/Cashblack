@@ -50,9 +50,7 @@ class UserSiginUpViews(APIView):
         my_user.set_password(password)
         my_user.save_product()
         my_user.send_sms()
-        
         toke =get_token_for_user(my_user)  
-
         return Response({'msg':toke},status=status.HTTP_200_OK)
     def put(self,request):
         us = CustumUsers.objects.filter(id=request.user.id)[0]
@@ -104,7 +102,6 @@ class UserUpdateFullNameViews(APIView):
 class CheckSms(APIView):
     render_classes = [UserRenderers]
     perrmisson_class = [IsAuthenticated]
-
     def post(self,request):
         code = request.data['code_s']
         if code =='':

@@ -31,3 +31,16 @@ class CreateCatgeorForms(forms.ModelForm):
             'title': "Kategoriya nomi",
             'logo':'Logotib kategoriya',
         }
+
+class ShopsPaymentSumm(forms.ModelForm):
+    class Meta:
+        model = Shops
+        fields = ['payment_summ',]
+        widgets = {
+            'payment_summ': forms.TextInput(attrs={'class':'form-control'}),
+        }
+
+        labels = {
+            'payment_summ': "To'lov summasi",
+        }
+

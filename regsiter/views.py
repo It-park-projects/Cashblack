@@ -8,7 +8,6 @@ from django.urls import reverse_lazy
 from regsiter.models import *
 from regsiter.forms import *
 
-
 def sigin_in(request):
     context = {}
     if request.method=='POST':
@@ -36,11 +35,27 @@ def home_admin(request):
 
 @login_required
 def static_information(request):
-    return render(request,'register/static_information.html')
+    context = {}
+    context['objects_list'] = Shops.objects.all()
+    return render(request,'register/static_information.html',context)
 
 @login_required
 def billling_sistem(request):
-    return render(request,'register/billing.html')
+    context = {}
+    context['obejcts_list'] = Shops.objects.all()
+    return render(request,'register/billing.html',context)
+
+class CreateSummPayment(UpdateView):
+    model = Shops
+    form_class = ShopsPaymentSumm
+    template_name = 'register/biling_summ.html'
+    success_url = reverse_lazy('billing_sistem')
+
+@login_required
+def billing_info_shops(request,id):
+    context = {}
+    context['object'] = Shops.objects.get(id=id)
+    return render(request,'register/info_billing.html',context)
 
 @login_required
 def all_ctageor(request):
