@@ -55,3 +55,12 @@ class UserUpdateSerializers(serializers.ModelSerializer):
         instance.code_s = validate_data.get('code_s',instance.code_s)
         instance.save()
         return instance
+class ClientUserUpdateSerializers(serializers.ModelSerializer):
+    class Meta:
+        model = CustumUsers
+        fields = '__all__'
+    def update(self,instance,validate_data):
+        for i in self.context.get('shops_id').all():
+            instance.shops_id.add(i)
+        instance.save()
+        return instance
