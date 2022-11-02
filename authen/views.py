@@ -49,10 +49,7 @@ class UserSiginUpViews(APIView):
         my_user = CustumUsers.objects.create(username=username,appSignature=appSignature)
         my_user.set_password(password)
         my_user.save_product()
-<<<<<<< HEAD
         my_user.send_sms()
-=======
->>>>>>> ac9f761f06265e614bfe5f07b7a90026e2be21f7
         toke =get_token_for_user(my_user)  
         return Response({'msg':toke},status=status.HTTP_200_OK)
     def put(self,request,appSignature):
