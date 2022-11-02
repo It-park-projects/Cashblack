@@ -1,3 +1,5 @@
+from enum import unique
+from tabnanny import verbose
 from django.db import models
 from django.contrib.auth.models import AbstractUser,BaseUserManager
 from django.core.files import File
@@ -23,7 +25,7 @@ class Distric(models.Model):
     def __str__(self):
         return self.name
 class Shops(models.Model):
-    name_shops = models.CharField(max_length=250,null=True,blank=True)
+    name_shops = models.CharField(max_length=250,null=True,blank=True,unique=True)
     brand_img = models.ImageField(upload_to='brands/',null=True,blank=True)
     cashback = models.IntegerField(null=True,blank=True)
     categor_id = models.ForeignKey(Cataegor,on_delete=models.CASCADE,null=True,blank=True)
@@ -54,6 +56,9 @@ class CustumUsers(AbstractUser):
         code_s = str(random.randint(10000,99999)) 
         send_message(self.username,code_s)
         return code_s
+
+
+
 
 
 

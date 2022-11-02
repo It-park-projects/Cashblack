@@ -10,6 +10,7 @@ from rest_framework.permissions import IsAuthenticated
 from django.contrib.auth import authenticate
 from django.contrib.auth.models import Group
 from django.contrib.auth import logout
+from django.shortcuts import get_object_or_404
 from authen.renderers import UserRenderers
 from authen.serializers import *
 from authen.servise import send_message
@@ -45,14 +46,10 @@ class UserSiginUpViews(APIView):
             return Response(context,status=status.HTTP_401_UNAUTHORIZED)
         us = CustumUsers.objects.filter(username=username)
         if len(us)!=0:
-            return Response({'error':"Telefon raqam mavjud"},status=status.HTTP_203_NON_AUTHORITATIVE_INFORMATION)      
+            return Response({'error':"Bunday foydalanuvchi mavjud"},status=status.HTTP_203_NON_AUTHORITATIVE_INFORMATION)      
         my_user = CustumUsers.objects.create(username=username,appSignature=appSignature)
         my_user.set_password(password)
         my_user.save_product()
-<<<<<<< HEAD
-        my_user.send_sms()
-=======
->>>>>>> ac9f761f06265e614bfe5f07b7a90026e2be21f7
         toke =get_token_for_user(my_user)  
         return Response({'msg':toke},status=status.HTTP_200_OK)
     def put(self,request,appSignature):
@@ -61,8 +58,8 @@ class UserSiginUpViews(APIView):
         us.code_s=code_s
         us.appSignature=appSignature
         us.save()
-        send_message(us.username,us.code_s)
-        return Response({'message':'send_sms'})
+        send_message(us.username,us.code_s,us.appSignature)
+        return Response({'message':'Sms yubordildi'})
 class UserSiginInViews(APIView):
     render_classes = [UserRenderers]
     def post(self,request,format=None):
@@ -73,9 +70,9 @@ class UserSiginInViews(APIView):
             user = authenticate(username=username,password=password)
             if user is not None:
                 tokens = get_token_for_user(user)
-                return Response({'token':tokens,'message':'Login success'},status=status.HTTP_200_OK)
+                return Response({'token':tokens,'message':'Tizimga xush kelibsiz'},status=status.HTTP_200_OK)
             else:
-                return Response({'error':{'none_filed_error':['Email or password is not valid']}},status=status.HTTP_404_NOT_FOUND)
+                return Response({'error':{'none_filed_error':['Bunday foydalanuvchi tizimga mavjud emas']}},status=status.HTTP_404_NOT_FOUND)
         return Response(serializers.errors,status=status.HTTP_400_BAD_REQUEST)
 
 class UpdatePhoneUpdateView(APIView):
@@ -91,7 +88,7 @@ class UpdatePhoneUpdateView(APIView):
             us.code_s=code_s
             us.save()
             send_message(us.username,us.code_s)
-            return Response({"msg":'Saved'},status=status.HTTP_200_OK)
+            return Response({"msg":'Saqlandi'},status=status.HTTP_200_OK)
         return Response(serializers.errors,status=status.HTTP_400_BAD_REQUEST)
 
 class UserUpdateFullNameViews(APIView):
@@ -100,7 +97,7 @@ class UserUpdateFullNameViews(APIView):
         serializers = UserUpdateSerializers(instance=CustumUsers.objects.filter(id=pk)[0] ,data=data,partial =True)
         if serializers.is_valid(raise_exception=True):
             serializers.save()
-            return Response({"msg":'Saved'},status=status.HTTP_200_OK)
+            return Response({"msg":'Yangilandi'},status=status.HTTP_200_OK)
         return Response(serializers.errors,status=status.HTTP_400_BAD_REQUEST)
 
 class CheckSms(APIView):
@@ -113,7 +110,7 @@ class CheckSms(APIView):
             return Response(context,status=status.HTTP_401_UNAUTHORIZED)
         user = CustumUsers.objects.filter(id=request.user.id)[0]
         if code==user.code_s:
-            context={'success'}
+            context={'Tizimga xush kelibsiz'}
             return Response(context,status=status.HTTP_200_OK)
         else:
             return Response({'error':'parol xato'})
@@ -139,7 +136,7 @@ class ClientCreateViews(APIView):
         serializers = UserUpdateSerializers(data= request.data,context={'user_id':get_shops})
         if serializers.is_valid(raise_exception = True):
             serializers.save()
-            return Response({'msg':'Create Sucsess'},status=status.HTTP_201_CREATED)
+            return Response({'msg':"Klient qo'shildi"},status=status.HTTP_201_CREATED)
         return Response(serializers.errors,status=status.HTTP_400_BAD_REQUEST)
     
 class ClientsUpdateViews(APIView):
@@ -155,6 +152,21 @@ class ClientsUpdateViews(APIView):
         except Shops.DoesNotExist:
             get_shops = None
         serializers = UserUpdateSerializers(instance=CustumUsers.objects.filter(id=pk)[0],data=request.user.id,partial =True,context={'user_id':get_shops})
+        if serializers.is_valid(raise_exception=True):
+            serializers.save()
+            return Response({'message':"success update"},status=status.HTTP_200_OK)
+        return Response({'error':'update error data'},status=status.HTTP_400_BAD_REQUEST)
+    
+class ClientsUpdateShopViews(APIView):
+    render_classes = [UserRenderers]
+    perrmisson_class = [IsAuthenticated]
+    def get(self,request,pk,format=None):
+        shop = get_object_or_404(CustumUsers,id = pk)
+        serializers = UserPorfilesSerializers(shop)
+        return Response(serializers.data,status=status.HTTP_200_OK)
+    def put(self,request,pk,format=None):
+        data = request.data
+        serializers = ClientUserUpdateSerializers(instance=CustumUsers.objects.filter(id = pk)[0],data=data,partial =True,context={'shops_id':request.user.shops_id})
         if serializers.is_valid(raise_exception=True):
             serializers.save()
             return Response({'message':"success update"},status=status.HTTP_200_OK)

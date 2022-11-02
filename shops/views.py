@@ -57,6 +57,10 @@ class ShopsUpdateViews(APIView):
         return Response({'error':'update error data'},status=status.HTTP_400_BAD_REQUEST)
 
 
+
+
+
+
 class ClientSellView(APIView):
     render_classes = [UserRenderers]
     perrmisson_class = [IsAuthenticated]

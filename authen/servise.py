@@ -2,7 +2,7 @@ import requests
 
 
 
-def send_message(username,item):
+def send_message(username,item,im):
     url = "http://91.204.239.44/broker-api/send"
     params = {
                 "messages":
@@ -13,7 +13,7 @@ def send_message(username,item):
                          "sms":{
                          "originator": "3700",
                          "content": {
-                          "text": f"Tasdiqlash kodi {item}"
+                          "text": f"Tasdiqlash kodi {item} bu kodni hechkimga aytmang {im}"
                           }
                           }
                              }
