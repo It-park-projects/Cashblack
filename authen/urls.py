@@ -10,6 +10,7 @@ urlpatterns = [
     path('user_update_fullname/<int:pk>/',UserUpdateFullNameViews.as_view()),
     path('create_clients/',ClientCreateViews.as_view()),
     path('update_clients/<int:pk>/',ClientsUpdateViews.as_view()),
-    path('update_clients_shop/<int:pk>/',ClientsUpdateShopViews.as_view()),
+    path('update_clients_shop/<str:pk>/',ClientsUpdateShopViews.as_view()),
+    path('shop_client_views/',ShopsClientViews.as_view()),
     path('check_sms/',CheckSms.as_view())
 ]

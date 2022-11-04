@@ -56,11 +56,6 @@ class ShopsUpdateViews(APIView):
             return Response({'message':"success update"},status=status.HTTP_200_OK)
         return Response({'error':'update error data'},status=status.HTTP_400_BAD_REQUEST)
 
-
-
-
-
-
 class ClientSellView(APIView):
     render_classes = [UserRenderers]
     perrmisson_class = [IsAuthenticated]
@@ -73,3 +68,13 @@ class ClientSellView(APIView):
             return Response({'msg':'Create Sucsess'},status=status.HTTP_201_CREATED)
         return Response(serializers.errors,status=status.HTTP_400_BAD_REQUEST)
 
+
+class AllCashbekClientViews(APIView):
+    render_classes = [UserRenderers]
+    perrmisson_class = [IsAuthenticated]
+    def get(self,request,pk,format=None):
+        shop = Shops.objects.get(user_id=request.user)
+        print(shop)
+        cashbak = Cashbacks.objects.filter()
+        serializers = ShopsSerializers(shop,many=True)
+        return Response(serializers.data,status=status.HTTP_200_OK)

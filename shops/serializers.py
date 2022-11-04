@@ -99,4 +99,8 @@ class CrudCashbakSerializers(serializers.ModelSerializer):
                 except SaveCashback.DoesNotExist:cashback = None
                 save_cashback = SaveCashback.objects.filter(cashbak_id = get_cashbacks).update(cashback = (cashback.cashback - float(replace_number)) + cashback_divide) 
             return create_client_sell 
-       
+    
+class ClientCashbekSerializers(serializers.ModelSerializer):
+    class Meta:
+        model = Cashbacks
+        fiedls = '__all__'
