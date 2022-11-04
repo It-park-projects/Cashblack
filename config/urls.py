@@ -11,6 +11,7 @@ urlpatterns = [
     path('admin_panel/',include('regsiter.urls')),
     path('api/',include('authen.urls')),
     path('api/',include('shops.urls')),
+    path('api/',include('billing.urls')),
     
 ]
 if settings.DEBUG:
