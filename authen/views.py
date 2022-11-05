@@ -118,7 +118,7 @@ class CheckSms(APIView):
 class UserProfilesViews(APIView):
     render_classes = [UserRenderers]
     perrmisson_class = [IsAuthenticated]
-    def get(self,request,format=None):
+    def get(self,request,format=None):  
         serializer = UserPorfilesSerializers(request.user)
         return Response(serializer.data,status=status.HTTP_200_OK)
 

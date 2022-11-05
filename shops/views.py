@@ -69,12 +69,14 @@ class ClientSellView(APIView):
         return Response(serializers.errors,status=status.HTTP_400_BAD_REQUEST)
 
 
-class AllCashbekClientViews(APIView):
+
+
+class StatistikShopsViews(APIView):
     render_classes = [UserRenderers]
     perrmisson_class = [IsAuthenticated]
-    def get(self,request,pk,format=None):
-        shop = Shops.objects.get(user_id=request.user)
-        print(shop)
-        cashbak = Cashbacks.objects.filter()
-        serializers = ShopsSerializers(shop,many=True)
+    def get(self,request,format=None):
+        shop = Shops.objects.get(user_id=request.user.id)
+        cashback = Cashbacks.objects.get(shops=shop.id)
+        cash = SaveCashback.objects.filter(cashbak_id=cashback.id)
+        serializers = ClientCashbackTwoSerializers(cash,many=True)
         return Response(serializers.data,status=status.HTTP_200_OK)

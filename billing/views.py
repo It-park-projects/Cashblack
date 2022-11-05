@@ -31,3 +31,11 @@ class MyBlance(APIView):
             serializers.save()
             return Response({'msg':"To'lov qabul qilindi"},status=status.HTTP_201_CREATED)
         return Response(serializers.errors,status=status.HTTP_400_BAD_REQUEST)
+
+class AllNotificationsViews(APIView):
+    render_classes = [UserRenderers]
+    perrmisson_class = [IsAuthenticated]
+    def get(self,request,format=None):
+        notification = NotifikationsSendClient.objects.filter()
+        serializers = AllNotificationSmsSerializers(notification,many=True)
+        return Response()
