@@ -50,7 +50,6 @@ class UserSiginUpViews(APIView):
         my_user = CustumUsers.objects.create(username=username,appSignature=appSignature)
         my_user.set_password(password)
         my_user.save_product()
-        my_user.send_sms()
         toke =get_token_for_user(my_user)  
         return Response({'msg':toke},status=status.HTTP_200_OK)
     def put(self,request,appSignature):
@@ -162,13 +161,22 @@ class ClientsUpdateShopViews(APIView):
     render_classes = [UserRenderers]
     perrmisson_class = [IsAuthenticated]
     def get(self,request,pk,format=None):
-        shop = get_object_or_404(CustumUsers,id = pk)
+        shop = get_object_or_404(CustumUsers,username = int(pk))
         serializers = UserPorfilesSerializers(shop)
         return Response(serializers.data,status=status.HTTP_200_OK)
     def put(self,request,pk,format=None):
         data = request.data
-        serializers = ClientUserUpdateSerializers(instance=CustumUsers.objects.filter(id = pk)[0],data=data,partial =True,context={'shops_id':request.user.shops_id})
+        serializers = ClientUserUpdateSerializers(instance=CustumUsers.objects.filter(username = int(pk))[0],data=data,partial =True,context={'shops_id':request.user.shops_id})
         if serializers.is_valid(raise_exception=True):
             serializers.save()
             return Response({'message':"success update"},status=status.HTTP_200_OK)
         return Response({'error':'update error data'},status=status.HTTP_400_BAD_REQUEST)
+
+class ShopsClientViews(APIView):
+    render_classes = [UserRenderers]
+    perrmisson_class = [IsAuthenticated]
+    def get(self,request):
+        shop = Shops.objects.get(user_id=request.user.id)
+        user = CustumUsers.objects.filter(shops_id=shop.id)
+        serializers = ShopsClientSerializers(user,many=True)
+        return Response(serializers.data,status=status.HTTP_200_OK)

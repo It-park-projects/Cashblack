@@ -52,6 +52,19 @@ class CreateSummPayment(UpdateView):
     success_url = reverse_lazy('billing_sistem')
 
 @login_required
+def create_summ_shops(request):
+    context = {}
+    if request.method=='POST':
+        summ = request.POST.get('summ')
+        if summ=='':
+            context['error'] = "Summa kiritilmadi"
+            return render(request,'register/summ.html',context)
+        context['shops'] = Shops.objects.all().update(payment_summ=summ)
+        # context['shops'].save()
+        return redirect('billing_sistem')
+    return render(request,'register/summ.html',context)
+
+@login_required
 def billing_info_shops(request,id):
     context = {}
     context['object'] = Shops.objects.get(id=id)

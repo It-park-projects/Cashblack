@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'regsiter',
     'authen',
     'shops',
+    'billing',
 ]
 
 MIDDLEWARE = [

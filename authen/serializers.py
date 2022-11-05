@@ -64,3 +64,8 @@ class ClientUserUpdateSerializers(serializers.ModelSerializer):
             instance.shops_id.add(i)
         instance.save()
         return instance
+
+class ShopsClientSerializers(serializers.ModelSerializer):
+    class Meta:
+        model = CustumUsers
+        fields = ['id','username','first_name','last_name',]
