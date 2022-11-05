@@ -30,6 +30,14 @@ class UserPorfilesSerializers(serializers.ModelSerializer):
         model = CustumUsers
         fields = ['id','username','first_name','last_name','groups','shops_id',]
 
+
+class UpdateFullNameSerializers(serializers.ModelSerializer):
+    class Meta:
+        model = CustumUsers
+        fields = ['id','first_name','last_name']
+
+
+
 class UserUpdateSerializers(serializers.ModelSerializer):
     class Meta:
         model = CustumUsers
