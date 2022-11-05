@@ -94,7 +94,7 @@ class UpdatePhoneUpdateView(APIView):
 class UserUpdateFullNameViews(APIView):
     def put(self,request,pk,format=None):
         data = request.data
-        serializers = UserUpdateSerializers(instance=CustumUsers.objects.filter(id=pk)[0] ,data=data,partial =True)
+        serializers = UpdateFullNameSerializers(instance=CustumUsers.objects.filter(id=pk)[0] ,data=data,partial =True)
         if serializers.is_valid(raise_exception=True):
             serializers.save()
             return Response({"msg":'Yangilandi'},status=status.HTTP_200_OK)
@@ -180,3 +180,5 @@ class ShopsClientViews(APIView):
         user = CustumUsers.objects.filter(shops_id=shop.id)
         serializers = ShopsClientSerializers(user,many=True)
         return Response(serializers.data,status=status.HTTP_200_OK)
+
+

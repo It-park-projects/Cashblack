@@ -50,7 +50,7 @@ class ShopsUpdateViews(APIView):
         serializers = ShopsSerializers(shop,many=True)
         return Response(serializers.data,status=status.HTTP_200_OK)
     def put(self,request,pk,format=None):
-        serializers = ShopsSerializers(instance=Shops.objects.filter(id=pk)[0],data=request.user.id,partial =True)
+        serializers = ShopsSerializers(instance=Shops.objects.filter(id=pk)[0],data=request.user.id,partial=True)
         if serializers.is_valid(raise_exception=True):
             serializers.save()
             return Response({'message':"success update"},status=status.HTTP_200_OK)
@@ -78,3 +78,11 @@ class AllCashbekClientViews(APIView):
         cashbak = Cashbacks.objects.filter()
         serializers = ShopsSerializers(shop,many=True)
         return Response(serializers.data,status=status.HTTP_200_OK)
+
+class ClientStatistikaView(APIView):
+    render_classes = [UserRenderers]
+    perrmisson_class = [IsAuthenticated]
+    def get(self,request,format=None):
+        cashbak = Cashbacks.objects.filter(client=request.user.id)
+        serializers = ClientCashbekSerializers(cashbak,many=True)
+        return Response(serializers.data,status=status.HTTP_200_OK) 
