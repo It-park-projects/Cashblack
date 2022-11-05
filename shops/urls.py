@@ -10,4 +10,5 @@ urlpatterns = [
     path('all_distrik_view/',AllDistricViews.as_view()),
     path('cashbak_create/<int:barcode_id>/<str:is_cashback>/',ClientSellView.as_view()),
     path('client_statistic_view/',ClientStatistikaView.as_view()),
+    path('static_shop_views/',StatistikShopsViews.as_view()),
 ]

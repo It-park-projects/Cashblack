@@ -8,7 +8,7 @@ from shops.models import Cashbacks, SaveCashback
 class AllUserSerializers(serializers.ModelSerializer):
     class Meta:
         model = CustumUsers
-        fields = '__all__'
+        fields = ['id','username','first_name','last_name',]
 
 class AllCategorSerializers(serializers.ModelSerializer):
     class Meta:
@@ -101,8 +101,28 @@ class CrudCashbakSerializers(serializers.ModelSerializer):
             return create_client_sell 
     
 class ClientCashbekSerializers(serializers.ModelSerializer):
+
     shops = ShopsAllSerializers(read_only=True)
     class Meta:
         model = Cashbacks
         fields = ['id','price','shops','date',]
 
+
+    client = AllUserSerializers(read_only=True)
+    class Meta:
+        model = Cashbacks
+        fields = '__all__'
+
+class ClientCashbackTwoSerializers(serializers.ModelSerializer):
+    cashbak_id = ClientCashbekSerializers(read_only=True)
+    class Meta:
+        model = SaveCashback
+        fields = '__all__'
+
+
+class ClientStatistkSerializers(serializers.ModelSerializer):
+    shops_id = ShopsAllSerializers(read_only=True,many=True)
+    class Meta:
+        model = CustumUsers
+        fields = ['id','shops_id']
+>>>>>>> e1d9406f4067bf8f1d39f07628a33f9e92257cc9

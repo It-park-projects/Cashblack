@@ -33,3 +33,10 @@ class CreateBillingsSerializer(serializers.ModelSerializer):
             shop_id = self.context.get('shop_id')  
         )
         return balance_create
+
+
+class AllNotificationSmsSerializers(serializers.ModelSerializer):
+    shop_id = ShopsSerializers(read_only=True)
+    class Meta:
+        model = NotifikationsSendClient
+        fields = '__all__'
