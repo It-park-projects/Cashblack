@@ -50,7 +50,9 @@ class UserSiginUpViews(APIView):
         my_user = CustumUsers.objects.create(username=username,appSignature=appSignature)
         my_user.set_password(password)
         my_user.save_product()
-        toke =get_token_for_user(my_user)  
+        toke =get_token_for_user(my_user)
+        gr = Group.objects.get(name= 'Biznes')
+        my_user.groups.add(gr)  
         return Response({'msg':toke},status=status.HTTP_200_OK)
     def put(self,request,appSignature):
         us = CustumUsers.objects.filter(id=request.user.id)[0]
@@ -60,6 +62,48 @@ class UserSiginUpViews(APIView):
         us.save()
         send_message(us.username,us.code_s,us.appSignature)
         return Response({'message':'Sms yubordildi'})
+
+class CreateSotrutnikView(APIView):
+    render_classes = [UserRenderers]
+    perrmisson_class = [IsAuthenticated]
+    def post(self,request,format=None):
+        username = request.data['username']
+        password = request.data['password']
+        first_name = request.data['first_name']
+        last_name = request.data['last_name']
+        if username=='' or first_name=='' or last_name=='':
+            return Response({'error':"Ma'lumotlarni to'ldiring"},status=status.HTTP_203_NON_AUTHORITATIVE_INFORMATION)
+        us = CustumUsers.objects.filter(username=username)
+        if len(us)!=0:
+            return Response({'error':"Bunday foydalanuvchi mavjud"},status=status.HTTP_203_NON_AUTHORITATIVE_INFORMATION)
+        s = Shops.objects.get(user_id=request.user.id)
+        my_user = CustumUsers.objects.create(username=username,first_name=first_name,last_name=last_name,)
+        my_user.set_password(password)
+        my_user.save_product()
+        my_user.shops_id.add(s)
+        my_user.save()
+        gr = Group.objects.get(name= 'Sotrutnik')
+        my_user.groups.add(gr)      
+        return Response({'msg':"Create Sotrutnik"},status=status.HTTP_200_OK)
+class CreateClientView(APIView):
+    render_classes = [UserRenderers]
+    perrmisson_class = [IsAuthenticated]
+    def post(self,request,appSignature):
+        username = request.data['username']
+        password = request.data['password']
+        if username=='':
+            return Response({'error':"Ma'lumotlarni to'ldiring"},status=status.HTTP_203_NON_AUTHORITATIVE_INFORMATION)
+        us = CustumUsers.objects.filter(username=username)
+        if len(us)!=0:
+            return Response({'error':"Bunday foydalanuvchi mavjud"},status=status.HTTP_203_NON_AUTHORITATIVE_INFORMATION)
+        s = Shops.objects.get(user_id=request.user.id)
+        my_user = CustumUsers.objects.create(username=username,appSignature=appSignature)
+        my_user.set_password(password)
+        my_user.save_product()
+        gr = Group.objects.get(name= 'Client')
+        my_user.groups.add(gr)      
+        return Response({'msg':"Create Sotrutnik"},status=status.HTTP_200_OK)
+
 class UserSiginInViews(APIView):
     render_classes = [UserRenderers]
     def post(self,request,format=None):

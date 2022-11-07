@@ -35,7 +35,7 @@ class ShopsAllSerializers(serializers.ModelSerializer):
 class ShopsSerializers(serializers.ModelSerializer):
     class Meta:
         model = Shops
-        fields = ['id','name_shops','brand_img','cashback','categor_id','provinse_id','distrik_id','user_id']
+        fields = ['id','name_shops','brand_img','cashback','categor_id','provinse_id','distrik_id','user_id',]
     def create(self, validated_data):
         create_shop = Shops.objects.create(
             name_shops = validated_data['name_shops'],
@@ -53,16 +53,17 @@ class ShopsSerializers(serializers.ModelSerializer):
         user_get.shops_id.add(create_shop.id)
         user_get.save()
         return create_shop
-    def update(self, instance, validate_data):
-        instance.name_shops = validate_data.get('name_shops',instance.name_shops)
-        instance.brand_img = validate_data.get('brand_img',instance.brand_img)
-        instance.cashback = validate_data.get('cashback',instance.cashback)
-        instance.categor_id = validate_data.get('categor_id',instance.categor_id)
-        instance.provinse_id = validate_data.get('provinse_id',instance.provinse_id)
-        instance.distrik_id = validate_data.get('distrik_id',instance.distrik_id)
+    def update(self, instance, validated_data):
+        print(validated_data.get('name_shops'))
+        instance.name_shops = validated_data.get('name_shops',instance.name_shops)
+        instance.brand_img = validated_data.get('brand_img',instance.brand_img)
+        instance.cashback = validated_data.get('cashback',instance.cashback)
+        instance.categor_id = validated_data.get('categor_id',instance.categor_id)
+        instance.provinse_id = validated_data.get('provinse_id',instance.provinse_id)
+        instance.distrik_id = validated_data.get('distrik_id',instance.distrik_id)
         instance.save() 
         return instance
-
+ 
 
 class AllCashbakSerializers(serializers.ModelSerializer):
     shops = ShopsAllSerializers(read_only=True)
@@ -125,4 +126,4 @@ class ClientStatistkSerializers(serializers.ModelSerializer):
     class Meta:
         model = CustumUsers
         fields = ['id','shops_id']
->>>>>>> e1d9406f4067bf8f1d39f07628a33f9e92257cc9
+

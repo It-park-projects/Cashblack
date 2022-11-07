@@ -13,6 +13,7 @@ class NotifikationsSendClient(models.Model):
     content = models.TextField(null=True,blank=True)
     img = models.ImageField(upload_to='notifikation/',null=True,blank=True)
     shop_id = models.ForeignKey(Shops,on_delete=models.CASCADE,null=True,blank=True)
+    author_id = models.ForeignKey(CustumUsers,on_delete=models.CASCADE,null=True,blank=True)
     date = models.DateField(auto_now_add=True)
 
     def __str__(self):

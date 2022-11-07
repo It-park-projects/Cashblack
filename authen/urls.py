@@ -12,5 +12,9 @@ urlpatterns = [
     path('update_clients/<int:pk>/',ClientsUpdateViews.as_view()),
     path('update_clients_shop/<str:pk>/',ClientsUpdateShopViews.as_view()),
     path('shop_client_views/',ShopsClientViews.as_view()),
-    path('check_sms/',CheckSms.as_view())
+    path('check_sms/',CheckSms.as_view()),
+
+
+    path('create_sotrutnik_view/',CreateSotrutnikView.as_view()),
+    path('create_client_view/<str:appSignature>/',CreateClientView.as_view()),
 ]

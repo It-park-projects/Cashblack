@@ -40,3 +40,24 @@ class AllNotificationSmsSerializers(serializers.ModelSerializer):
     class Meta:
         model = NotifikationsSendClient
         fields = '__all__'
+
+class CreateNotificationSmsSerializers(serializers.ModelSerializer):
+    class Meta:
+        model = NotifikationsSendClient
+        fields =  '__all__'
+    def create(self, validate_date):
+        notification_create = NotifikationsSendClient.objects.create(
+            title = validate_date['title'],
+            content = validate_date['content'],
+            img =  validate_date['img'],
+            author_id = self.context.get('author_id'),
+            shop_id = self.context.get['shop_id']
+        )   
+        
+        return notification_create
+    # def update(self,instance,validate_data):
+    #     instance.title = validate_data.get('title',instance.title)
+    #     instance.content = validate_data.get('content',instance.content)
+    #     instance.img = validate_data.get('img',instance.img)
+    #     instance.save()
+    #     return instance
