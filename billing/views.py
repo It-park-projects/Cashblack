@@ -37,8 +37,8 @@ class AllNotificationsViews(APIView):
     perrmisson_class = [IsAuthenticated]
     def get(self,request,format=None):
         for item in request.user.shops_id.all():
-            print(item)
-        notification = NotifikationsSendClient.objects.all()
+            x = item.id
+        notification = NotifikationsSendClient.objects.filter(shop_id=x)
         serializers = AllNotificationSmsSerializers(notification,many=True)
         return Response(serializers.data,status=status.HTTP_200_OK)
     def post(self,request,format=None):
