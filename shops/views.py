@@ -8,6 +8,9 @@ from authen.serializers import *
 from regsiter.models import *
 from shops.serializers import *
 from django.shortcuts import get_object_or_404
+from datetime import date,timedelta
+from dateutil.relativedelta import relativedelta
+from dateutil.parser import parse
 
 
 class AllCategorViews(APIView):
@@ -71,26 +74,107 @@ class ClientSellView(APIView):
 
 
 
-class StatistikShopsViews(APIView):
-    render_classes = [UserRenderers]
-    perrmisson_class = [IsAuthenticated]
-    def get(self,request,pk,format=None):
-        shop = Shops.objects.get(user_id=request.user)
-        print(shop)
-        cashbak = Cashbacks.objects.filter()
-        serializers = ShopsSerializers(shop,many=True)
-        return Response(serializers.data,status=status.HTTP_200_OK)
 
-class ClientStatistikaView(APIView):
-    render_classes = [UserRenderers]
-    perrmisson_class = [IsAuthenticated]
+class StatisticsTodayCashbacks(APIView):
     def get(self,request,format=None):
-        cashbak = Cashbacks.objects.filter(client=request.user.id)
-        serializers = ClientCashbekSerializers(cashbak,many=True)
-        return Response(serializers.data,status=status.HTTP_200_OK) 
+        all_list_payments = []
+        try:get_Shop = Shops.objects.get(user_id=request.user.id)
+        except Shops.DoesNotExist: get_Shop=None
+        for i in Cashbacks.objects.filter(shops__id = get_Shop.id,date__day = date.today().day):
+            all_list_payments.append({
+                'phone':i.client.username,
+                'price':i.price,
+                'cashback':int(i.price) * (get_Shop.cashback / 100),
+                'date':i.date
+            })
+        return Response({'list':all_list_payments})
+
+class StatisticsYestardayCashbacks(APIView):
     def get(self,request,format=None):
-        shop = Shops.objects.get(user_id=request.user.id)
-        cashback = Cashbacks.objects.get(shops=shop.id)
-        cash = SaveCashback.objects.filter(cashbak_id=cashback.id)
-        serializers = ClientCashbackTwoSerializers(cash,many=True)
-        return Response(serializers.data,status=status.HTTP_200_OK)
+        all_list_payments = []
+        try:get_Shop = Shops.objects.get(user_id=request.user.id)
+        except Shops.DoesNotExist: get_Shop=None
+        get_yestarday = date.today() -relativedelta(days=1)
+        for i in Cashbacks.objects.filter(shops__id = get_Shop.id,date__day = get_yestarday.day):
+            all_list_payments.append({
+                'phone':i.client.username,
+                'price':i.price,
+                'cashback':int(i.price) * (get_Shop.cashback / 100),
+                'date':i.date
+            })
+        return Response({'list':all_list_payments})
+
+class StatisticsBeforeYestardayCashbacks(APIView):
+    def get(self,request,format=None):
+        all_list_payments = []
+        try:get_Shop = Shops.objects.get(user_id=request.user.id)
+        except Shops.DoesNotExist: get_Shop=None
+        get_yestarday = date.today() -relativedelta(days=2)
+        for i in Cashbacks.objects.filter(shops__id = get_Shop.id,date__day = get_yestarday.day):
+            all_list_payments.append({
+                'phone':i.client.username,
+                'price':i.price,
+                'cashback':int(i.price) * (get_Shop.cashback / 100),
+                'date':i.date
+            })
+        return Response({'list':all_list_payments})
+    
+class StatisticsMonthCashbacks(APIView):
+    def get(self,request,format=None):
+        all_list_payments = []
+        try:get_Shop = Shops.objects.get(user_id=request.user.id)
+        except Shops.DoesNotExist: get_Shop=None
+        # get_yestarday = date.today() -relativedelta(months=1)
+        for i in Cashbacks.objects.filter(shops__id = get_Shop.id,date__month = date.today().month):
+            all_list_payments.append({
+                'phone':i.client.username,
+                'price':i.price,
+                'cashback':int(i.price) * (get_Shop.cashback / 100),
+                'date':i.date
+            })
+        return Response({'list':all_list_payments})
+class StatisticsBeforeMonthCashbacks(APIView):
+    def get(self,request,format=None):
+        all_list_payments = []
+        try:get_Shop = Shops.objects.get(user_id=request.user.id)
+        except Shops.DoesNotExist: get_Shop=None
+        get_yestarday = date.today() -relativedelta(months=1)
+        for i in Cashbacks.objects.filter(shops__id = get_Shop.id,date__month = get_yestarday.month):
+            all_list_payments.append({
+                'phone':i.client.username,
+                'price':i.price,
+                'cashback':int(i.price) * (get_Shop.cashback / 100),
+                'date':i.date
+            })
+        return Response({'list':all_list_payments})
+
+class StatisticsBefore3MonthCashbacks(APIView):
+    def get(self,request,format=None):
+        all_list_payments = []
+        try:get_Shop = Shops.objects.get(user_id=request.user.id)
+        except Shops.DoesNotExist: get_Shop=None
+        get_yestarday = date.today() -relativedelta(months=2)
+        get_today_month = date.today() + relativedelta(months=1)
+        for k in range(get_yestarday.month,get_today_month.month,1 ):
+            for i in Cashbacks.objects.filter(shops__id = get_Shop.id,date__month = k):
+                all_list_payments.append({
+                    'phone':i.client.username,
+                    'price':i.price,
+                    'cashback':int(i.price) * (get_Shop.cashback / 100),
+                    'date':i.date
+                })
+        return Response({'list':all_list_payments})
+
+class StatisticsYearCashbacks(APIView):
+    def get(self,request,format=None):
+        all_list_payments = []
+        try:get_Shop = Shops.objects.get(user_id=request.user.id)
+        except Shops.DoesNotExist: get_Shop=None
+        for i in Cashbacks.objects.filter(shops__id = get_Shop.id,date__year = date.today().year):
+            all_list_payments.append({
+                'phone':i.client.username,
+                'price':i.price,
+                'cashback':int(i.price) * (get_Shop.cashback / 100),
+                'date':i.date
+            })
+        return Response({'list':all_list_payments})

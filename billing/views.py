@@ -14,6 +14,8 @@ from authen.servise import send_message
 from regsiter.models import *
 from billing.models import *
 from billing.serializers import *
+from dateutil.relativedelta import relativedelta
+from datetime import date
 
 
 class MyBlance(APIView):
@@ -26,6 +28,7 @@ class MyBlance(APIView):
     
     def post(self,request,format=None):
         shop = Shops.objects.get(user_id=request.user.id)
+        user_change_staff = CustumUsers.objects.filter(id = request.user).update(is_staff = True)
         serializers = CreateBillingsSerializer(data=request.data,context={'user_id':request.user,'shop_id':shop})
         if serializers.is_valid(raise_exception = True):
             serializers.save()
@@ -48,3 +51,14 @@ class AllNotificationsViews(APIView):
             serializers.save()
             return Response({'msg':"Send notifications"},status=status.HTTP_201_CREATED)
         return Response(serializers.errors,status=status.HTTP_400_BAD_REQUEST)
+    
+class SendNotificationForUserViews(APIView):
+    def get(self,request,format=None):
+        try:
+            get_users_payment_date = Blance.objects.get(user_id=request.user.id)
+        except Blance.DoesNotExist:
+            get_users_payment_date = None
+        get_day = (get_users_payment_date.payment_date + relativedelta(months=1))-relativedelta(days=3)
+        if date.today().day == get_day.day and date.today().month == get_day.month:
+            return Response({"msg":"Iltimos Blansni oldindan to'ldirib qo'ying"})
+        return Response({'msg':"sdsdsd"})

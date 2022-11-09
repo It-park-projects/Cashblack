@@ -6,7 +6,7 @@ class Blance(models.Model):
     blance = models.CharField(max_length=250,null=True,blank=True)
     user_id = models.ForeignKey(CustumUsers,on_delete=models.CASCADE,null=True,blank=True)
     shop_id = models.ForeignKey(Shops,on_delete=models.CASCADE,null=True,blank=True)
-    payment_date = models.DateTimeField(auto_now_add=True)
+    payment_date = models.DateField(auto_now=False,auto_now_add=True)
 
 class NotifikationsSendClient(models.Model):
     title = models.CharField(max_length=250,null=True,blank=True)
