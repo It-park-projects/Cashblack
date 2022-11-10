@@ -85,9 +85,9 @@ class CrudCashbakSerializers(serializers.ModelSerializer):
             try:get_shop_cashback = Shops.objects.get(user_id = get_user)
             except Shops.DoesNotExist:get_shop_cashback = None
             cashback_divide = int(replace_number) * (get_shop_cashback.cashback/100)    
-            create_client_sell = Cashbacks.objects.create(price = replace_number,shops = get_shop_cashback,client = self.context.get('client_id'))
             if self.context.get('is_cashback') == "False":
                 print(False)
+                create_client_sell = Cashbacks.objects.create(price = replace_number,shops = get_shop_cashback,client = self.context.get('client_id'),is_cashback = False)
                 if SaveCashback.objects.filter(cashbak_id = get_cashbacks).first() == None:
                     save_cashback = SaveCashback.objects.create(cashback = cashback_divide,cashbak_id = create_client_sell)
                 else:
@@ -96,6 +96,7 @@ class CrudCashbakSerializers(serializers.ModelSerializer):
                     save_cashback = SaveCashback.objects.filter(cashbak_id = get_cashbacks).update(cashback = cashback.cashback + cashback_divide) 
             else:
                 print(True)
+                create_client_sell = Cashbacks.objects.create(price = replace_number,shops = get_shop_cashback,client = self.context.get('client_id'),is_cashback = True)
                 try:cashback = SaveCashback.objects.get(cashbak_id = get_cashbacks)
                 except SaveCashback.DoesNotExist:cashback = None
                 save_cashback = SaveCashback.objects.filter(cashbak_id = get_cashbacks).update(cashback = (cashback.cashback - float(replace_number)) + cashback_divide) 

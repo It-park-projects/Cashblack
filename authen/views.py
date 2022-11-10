@@ -96,13 +96,14 @@ class CreateClientView(APIView):
         us = CustumUsers.objects.filter(username=username)
         if len(us)!=0:
             return Response({'error':"Bunday foydalanuvchi mavjud"},status=status.HTTP_203_NON_AUTHORITATIVE_INFORMATION)
-        s = Shops.objects.get(user_id=request.user.id)
+        # s = Shops.objects.get(user_id=request.user.id)
         my_user = CustumUsers.objects.create(username=username,appSignature=appSignature)
         my_user.set_password(password)
         my_user.save_product()
         gr = Group.objects.get(name= 'Client')
-        my_user.groups.add(gr)      
-        return Response({'msg':"Create Sotrutnik"},status=status.HTTP_200_OK)
+        my_user.groups.add(gr)
+        # my_user.save()      
+        return Response({'msg':"Create Client"},status=status.HTTP_200_OK)
 
 class UserSiginInViews(APIView):
     render_classes = [UserRenderers]
