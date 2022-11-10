@@ -9,6 +9,7 @@ from shops.serializers import *
 from django.shortcuts import get_object_or_404
 from datetime import date,timedelta
 from dateutil.relativedelta import relativedelta
+from django.utils.dateparse import parse_date
 
 
 class AllCategorViews(APIView):
@@ -83,96 +84,93 @@ class StatisticsTodayCashbacks(APIView):
                 'phone':i.client.username,
                 'price':i.price,
                 'cashback':int(i.price) * (get_Shop.cashback / 100),
+                'salesman':f'{i.user_id.first_name} {i.user_id.last_name}',
                 'date':i.date
             })
         return Response({'list':all_list_payments})
 
-class StatisticsYestardayCashbacks(APIView):
-    def get(self,request,format=None):
+class StatisticsCashbacksFilter(APIView):
+    def get(self,request,start_date,end_date,format=None):
         all_list_payments = []
         try:get_Shop = Shops.objects.get(user_id=request.user.id)
         except Shops.DoesNotExist: get_Shop=None
-        get_yestarday = date.today() -relativedelta(days=1)
-        for i in Cashbacks.objects.filter(shops__id = get_Shop.id,date__day = get_yestarday.day):
-            all_list_payments.append({
-                'phone':i.client.username,
-                'price':i.price,
-                'cashback':int(i.price) * (get_Shop.cashback / 100),
-                'date':i.date
-            })
-        return Response({'list':all_list_payments})
-
-class StatisticsBeforeYestardayCashbacks(APIView):
-    def get(self,request,format=None):
-        all_list_payments = []
-        try:get_Shop = Shops.objects.get(user_id=request.user.id)
-        except Shops.DoesNotExist: get_Shop=None
-        get_yestarday = date.today() -relativedelta(days=2)
-        for i in Cashbacks.objects.filter(shops__id = get_Shop.id,date__day = get_yestarday.day):
-            all_list_payments.append({
-                'phone':i.client.username,
-                'price':i.price,
-                'cashback':int(i.price) * (get_Shop.cashback / 100),
-                'date':i.date
-            })
-        return Response({'list':all_list_payments})
-    
-class StatisticsMonthCashbacks(APIView):
-    def get(self,request,format=None):
-        all_list_payments = []
-        try:get_Shop = Shops.objects.get(user_id=request.user.id)
-        except Shops.DoesNotExist: get_Shop=None
-        # get_yestarday = date.today() -relativedelta(months=1)
-        for i in Cashbacks.objects.filter(shops__id = get_Shop.id,date__month = date.today().month):
-            all_list_payments.append({
-                'phone':i.client.username,
-                'price':i.price,
-                'cashback':int(i.price) * (get_Shop.cashback / 100),
-                'date':i.date
-            })
-        return Response({'list':all_list_payments})
-class StatisticsBeforeMonthCashbacks(APIView):
-    def get(self,request,format=None):
-        all_list_payments = []
-        try:get_Shop = Shops.objects.get(user_id=request.user.id)
-        except Shops.DoesNotExist: get_Shop=None
-        get_yestarday = date.today() -relativedelta(months=1)
-        for i in Cashbacks.objects.filter(shops__id = get_Shop.id,date__month = get_yestarday.month):
-            all_list_payments.append({
-                'phone':i.client.username,
-                'price':i.price,
-                'cashback':int(i.price) * (get_Shop.cashback / 100),
-                'date':i.date
-            })
-        return Response({'list':all_list_payments})
-
-class StatisticsBefore3MonthCashbacks(APIView):
-    def get(self,request,format=None):
-        all_list_payments = []
-        try:get_Shop = Shops.objects.get(user_id=request.user.id)
-        except Shops.DoesNotExist: get_Shop=None
-        get_yestarday = date.today() -relativedelta(months=2)
-        get_today_month = date.today() + relativedelta(months=1)
-        for k in range(get_yestarday.month,get_today_month.month,1 ):
+        start_date_get = parse_date(start_date)
+        end_date_get = parse_date(end_date) + relativedelta(months=1)
+        for k in range(start_date_get.month,end_date_get.month,1):
             for i in Cashbacks.objects.filter(shops__id = get_Shop.id,date__month = k):
                 all_list_payments.append({
                     'phone':i.client.username,
                     'price':i.price,
                     'cashback':int(i.price) * (get_Shop.cashback / 100),
-                    'date':i.date
+                    'salesman':f'{i.user_id.first_name} {i.user_id.last_name}',
                 })
         return Response({'list':all_list_payments})
 
-class StatisticsYearCashbacks(APIView):
-    def get(self,request,format=None):
+class CashbackStatistics(APIView):
+    def get(self,request,start_date,end_date,format=None):
         all_list_payments = []
+        csh = 0
+        cshprice = 0
+        start_date_get = parse_date(start_date)
+        end_date_get = parse_date(end_date) + + relativedelta(months=1)
         try:get_Shop = Shops.objects.get(user_id=request.user.id)
         except Shops.DoesNotExist: get_Shop=None
-        for i in Cashbacks.objects.filter(shops__id = get_Shop.id,date__year = date.today().year):
-            all_list_payments.append({
-                'phone':i.client.username,
-                'price':i.price,
-                'cashback':int(i.price) * (get_Shop.cashback / 100),
-                'date':i.date
-            })
+        for k in range(start_date_get.month,end_date_get.month,1):
+            for i in Cashbacks.objects.filter(shops__id = get_Shop.id,date__month = k,is_cashback = True,date__year = date.today().year):
+                cshprice += (i.price * (get_Shop.cashback / 100))
+                csh += i.price
+                try: get_cashbacks =  SaveCashback.objects.get(cashbak_id = i.id)
+                except SaveCashback.DoesNotExist: get_cashbacks = None
+                all_list_payments.append({'phone':i.client.username,'all_payed_cashback':csh,'cashback':cshprice,})
         return Response({'list':all_list_payments})
+    
+class ClientCategory(APIView):
+    render_classes = [UserRenderers]
+    perrmisson_class = [IsAuthenticated]
+    def get(self,request,format=None):
+        x= []
+        for item in Cataegor.objects.all():
+            x.append({'id':item.id,'name':item.title})
+        return Response(x,status=status.HTTP_200_OK)
+
+class ClientShops(APIView):
+    render_classes = [UserRenderers]
+    perrmisson_class = [IsAuthenticated]
+    def get(self,request,id,format=None):
+        x= []
+        for item in request.user.shops_id.all():
+            if item.categor_id.id == id:
+                x.append({'id':item.id,'name_shop':item.name_shops,})
+        return Response(x,status=status.HTTP_200_OK)
+
+class ClientShopsStatistics(APIView):
+    render_classes = [UserRenderers]
+    perrmisson_class = [IsAuthenticated]
+    def get(self,request,id,format=None):
+        x= []
+        try: get_shop =  Cashbacks.objects.get(shops__id=id,client = request.user.id)
+        except Cashbacks.DoesNotExist: get_shop = None
+        x.append({
+            'price':get_shop.price,
+            'csh_persent':get_shop.shops.cashback,
+            'csh':int(get_shop.price) * (get_shop.shops.cashback / 100),
+            'date':get_shop.date
+        })
+        return Response(x,status=status.HTTP_200_OK)
+    
+class ClientShopStatisticsGet(APIView):
+    render_classes = [UserRenderers]
+    perrmisson_class = [IsAuthenticated]
+    def get(self,request,id,start_date,end_date,format=None):
+        x = []
+        start_date_get = parse_date(start_date)
+        end_date_get = parse_date(end_date) + relativedelta(months=1)
+        for k in range(start_date_get.month,end_date_get.month,1):
+            for i in Cashbacks.objects.filter(shops__id=id,client = request.user.id,date__month = k):
+                x.append({
+                    'price':i.price,
+                    'csh_persent':i.shops.cashback,
+                    'csh':int(i.price) * (i.shops.cashback / 100),
+                    'date':i.date
+                })
+        return Response(x,status=status.HTTP_200_OK)

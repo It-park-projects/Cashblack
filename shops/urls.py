@@ -8,12 +8,17 @@ urlpatterns = [
     path('all_categor_views/',AllCategorViews.as_view()),
     path('all_province_view/',AllProvinceViews.as_view()),
     path('all_distrik_view/',AllDistricViews.as_view()),
+
+    path('client_category/',ClientCategory.as_view()),
+    path('client_shops/<int:id>/',ClientShops.as_view()),
+    path('client_shops_statistics/<int:id>/',ClientShopsStatistics.as_view()),
+    path('client_shop_filter/<int:id>/<str:start_date>/<str:end_date>/',ClientShopStatisticsGet.as_view()),
+
     path('cashbak_create/<int:barcode_id>/<str:is_cashback>/',ClientSellView.as_view()),
+    
     path('statistics_today/',StatisticsTodayCashbacks.as_view()),
-    path('statistics_yestarday/',StatisticsYestardayCashbacks.as_view()),
-    path('statistics_before_yestarday/',StatisticsBeforeYestardayCashbacks.as_view()),
-    path('statistics_month/',StatisticsMonthCashbacks.as_view()),
-    path('statistics_before_month/',StatisticsBeforeMonthCashbacks.as_view()),
-    path('statistics_before_3_month/',StatisticsBefore3MonthCashbacks.as_view()),
-    path('statistics_year/',StatisticsYearCashbacks.as_view()),
+    path('statistics_filter/',StatisticsCashbacksFilter.as_view()),
+
+    path('cashbacks_day_statistics/<str:start_date>/<str:end_date>/',CashbackStatistics.as_view()),
+
 ]

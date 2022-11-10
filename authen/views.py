@@ -86,7 +86,7 @@ class CreateSotrutnikView(APIView):
         my_user.groups.add(gr)      
         return Response({'msg':"Create Sotrutnik"},status=status.HTTP_200_OK)
 class CreateClientView(APIView):
-    render_classes = [UserRenderers]
+    render_classes = [UserRenderers]    
     perrmisson_class = [IsAuthenticated]
     def post(self,request,appSignature):
         username = request.data['username']
