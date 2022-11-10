@@ -1,4 +1,3 @@
-from lib2to3.pytree import type_repr
 from rest_framework.response import Response
 from rest_framework import permissions, status
 from rest_framework.views import APIView
@@ -10,7 +9,6 @@ from shops.serializers import *
 from django.shortcuts import get_object_or_404
 from datetime import date,timedelta
 from dateutil.relativedelta import relativedelta
-from dateutil.parser import parse
 
 
 class AllCategorViews(APIView):
