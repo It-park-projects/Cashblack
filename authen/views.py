@@ -85,6 +85,16 @@ class CreateSotrutnikView(APIView):
         gr = Group.objects.get(name= 'Sotrutnik')
         my_user.groups.add(gr)      
         return Response({'msg':"Create Sotrutnik"},status=status.HTTP_200_OK)
+
+class DeleteSotrutnik(APIView):
+    render_classes = [UserRenderers]
+    perrmisson_class = [IsAuthenticated]
+    def delete(self,request,pk):
+        user = CustumUsers.objects.get(id=pk)
+        user.delete()
+        return Response({'msg': "Delete Sotrutnik"})
+
+        
 class CreateClientView(APIView):
     render_classes = [UserRenderers]    
     perrmisson_class = [IsAuthenticated]

@@ -1,4 +1,4 @@
-from tkinter.tix import Tree
+
 from django.db import models
 from regsiter.models import *
 from datetime import date

@@ -16,5 +16,6 @@ urlpatterns = [
 
 
     path('create_sotrutnik_view/',CreateSotrutnikView.as_view()),
+    path('delete_sotrutnik/<int:pk>/',DeleteSotrutnik.as_view()),
     path('create_client_view/<str:appSignature>/',CreateClientView.as_view()),
 ]

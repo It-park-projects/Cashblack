@@ -79,32 +79,28 @@ class CrudCashbakSerializers(serializers.ModelSerializer):
         fields = ['id','price','shops','client','user_id','date']
     def create(self, validated_data):
             get_user = self.context.get('user_id')   
-            print(get_user)
             get_number = str(validated_data['price'])
             get_cashbacks = self.context.get('check_cashbeck_sell')
             replace_number = get_number.replace(' ','')
-            # try:get_shop_cashback = Shops.objects.get(user_id = get_user)
-            # except Shops.DoesNotExist:get_shop_cashback = None
-            # print(get_shop_cashback)
-            # print(get_cashbacks)
-            # cashback_divide = int(replace_number) * (get_shop_cashback.cashback/100)   
-            # print(get_shop_cashback)
-            # if self.context.get('is_cashback') == "False":
-            #     create_client_sell = Cashbacks.objects.create(price = replace_number, shops = get_shop_cashback,user_id = get_shop_cashback, client = self.context.get('client_id'), is_cashback = False)
-            #     if SaveCashback.objects.filter(cashbak_id = get_cashbacks).first() == None:
-            #         save_cashback = SaveCashback.objects.create(cashback = cashback_divide,cashbak_id = create_client_sell)
-            #     else:
-            #         try:cashback = SaveCashback.objects.get(cashbak_id = get_cashbacks)
-            #         except SaveCashback.DoesNotExist:cashback = None
-            #         save_cashback = SaveCashback.objects.filter(cashbak_id = get_cashbacks).update(cashback = cashback.cashback + cashback_divide) 
-            # else:
-            #     print(True)
-            #     create_client_sell = Cashbacks.objects.create(price = replace_number,shops = get_shop_cashback,client = self.context.get('client_id'),is_cashback = True)
-            #     try:cashback = SaveCashback.objects.get(cashbak_id = get_cashbacks)
-            #     except SaveCashback.DoesNotExist:cashback = None
-            #     save_cashback = SaveCashback.objects.filter(cashbak_id = get_cashbacks).update(cashback = (cashback.cashback - float(replace_number)) + cashback_divide) 
-            # return create_client_sell 
-            return "fuck"
+            try:get_shop_cashback = Shops.objects.get(user_id = get_user)
+            except Shops.DoesNotExist:get_shop_cashback = None
+            cashback_divide = int(replace_number) * (get_shop_cashback.cashback/100)   
+            if self.context.get('is_cashback') == "False":
+                create_client_sell = Cashbacks.objects.create(price = replace_number, shops = get_shop_cashback, client = self.context.get('client_id'), is_cashback = False)
+                if SaveCashback.objects.filter(cashbak_id = get_cashbacks).first() == None:
+                    save_cashback = SaveCashback.objects.create(cashback = cashback_divide,cashbak_id = create_client_sell)
+                else:
+                    try:cashback = SaveCashback.objects.get(cashbak_id = get_cashbacks)
+                    except SaveCashback.DoesNotExist:cashback = None
+                    save_cashback = SaveCashback.objects.filter(cashbak_id = get_cashbacks).update(cashback = cashback.cashback + cashback_divide) 
+            else:
+                print(True)
+                create_client_sell = Cashbacks.objects.create(price = replace_number,shops = get_shop_cashback,client = self.context.get('client_id'),is_cashback = True)
+                try:cashback = SaveCashback.objects.get(cashbak_id = get_cashbacks)
+                except SaveCashback.DoesNotExist:cashback = None
+                save_cashback = SaveCashback.objects.filter(cashbak_id = get_cashbacks).update(cashback = (cashback.cashback - float(replace_number)) + cashback_divide) 
+            return create_client_sell 
+     
     
 class ClientCashbekSerializers(serializers.ModelSerializer):
 
@@ -132,3 +128,19 @@ class ClientStatistkSerializers(serializers.ModelSerializer):
         model = CustumUsers
         fields = ['id','shops_id']
 
+
+class CategorSe(serializers.ModelSerializer):
+    class Meta:
+        model = Cataegor
+        fields = '__all__'
+class ShopsSer(serializers.ModelSerializer):
+    categor_id = CategorSe(read_only=True)
+    class Meta:
+        model = Shops
+        fields = ['id','name_shops','brand_img','categor_id',]
+
+class ClinetCategorSerializers(serializers.ModelSerializer):
+    shops = ShopsSer(read_only=True)
+    class Meta:
+        model = Cashbacks
+        fields = ['id','shops',]
