@@ -9,13 +9,13 @@ from django import forms
 class CreasteUser(UserCreationForm):
     class Meta(UserCreationForm):
         model = CustumUsers
-        fields = ('username','first_name','last_name','code_s','password')
+        fields = ('username','first_name','last_name','code_s','promo_code','password')
 
 
 class ChangeUser(UserChangeForm):
     class Meta(UserChangeForm):
         model = CustumUsers
-        fields = ('username','first_name','last_name','code_s','password')
+        fields = ('username','first_name','last_name','code_s','promo_code','password')
 
 class CreateCatgeorForms(forms.ModelForm):
     class Meta:

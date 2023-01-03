@@ -54,7 +54,6 @@ class ShopsSerializers(serializers.ModelSerializer):
         user_get.save()
         return create_shop
     def update(self, instance, validated_data):
-        print(validated_data.get('name_shops',instance.name_shops))
         instance.name_shops = validated_data.get('name_shops',instance.name_shops)
         instance.brand_img = validated_data.get('brand_img',instance.brand_img)
         instance.cashback = validated_data.get('cashback',instance.cashback)

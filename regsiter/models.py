@@ -25,7 +25,7 @@ class Distric(models.Model):
     def __str__(self):
         return self.name
 class Shops(models.Model):
-    name_shops = models.CharField(max_length=250,null=True,blank=True)
+    name_shops = models.CharField(max_length=250,null=True,blank=True,unique=True)
     brand_img = models.ImageField(upload_to='brands/',null=True,blank=True)
     cashback = models.IntegerField(null=True,blank=True)
     categor_id = models.ForeignKey(Cataegor,on_delete=models.CASCADE,null=True,blank=True)
@@ -39,6 +39,7 @@ class Shops(models.Model):
         return self.name_shops
 class CustumUsers(AbstractUser):
     code_s = models.CharField(max_length=100,null=True,blank=True,unique=True)
+    promo_code = models.CharField(max_length=250,null=True,blank=True)
     shops_id = models.ManyToManyField(Shops,blank=True)
     appSignature = models.CharField(max_length=250,null=True,blank=True)
     barcode_id = models.CharField(max_length=200,blank=True)

@@ -11,6 +11,7 @@ from django.contrib.auth import logout
 from django.shortcuts import get_object_or_404
 from authen.renderers import UserRenderers
 from authen.servise import send_message
+from rest_framework.parsers import JSONParser,FileUploadParser,MultiPartParser, FormParser
 from regsiter.models import *
 from billing.models import *
 from billing.serializers import *
@@ -38,6 +39,7 @@ class MyBlance(APIView):
 class AllNotificationsViews(APIView):
     render_classes = [UserRenderers]
     perrmisson_class = [IsAuthenticated]
+    # parser_classes = (FileUploadParser, MultiPartParser, FormParser,JSONParser)
     def get(self,request,format=None):
         notification = NotifikationsSendClient.objects.filter(author_id=request.user.id)
         serializers = AllNotificationSmsSerializers(notification,many=True)

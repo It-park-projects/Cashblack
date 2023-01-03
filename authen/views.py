@@ -41,13 +41,14 @@ class UserSiginUpViews(APIView):
     def post(self,request,appSignature):
         username = request.data['username']
         password= request.data['password']
+        promo_code = request.data['promo_code']
         if username == "":
             context = {"Tel Raqam Kiritilmadi"}
             return Response(context,status=status.HTTP_401_UNAUTHORIZED)
         us = CustumUsers.objects.filter(username=username)
         if len(us)!=0:
             return Response({'error':"Bunday foydalanuvchi mavjud"},status=status.HTTP_203_NON_AUTHORITATIVE_INFORMATION)      
-        my_user = CustumUsers.objects.create(username=username,appSignature=appSignature)
+        my_user = CustumUsers.objects.create(username=username,appSignature=appSignature,promo_code=promo_code)
         my_user.set_password(password)
         my_user.save_product()
         toke =get_token_for_user(my_user)
@@ -100,6 +101,7 @@ class CreateClientView(APIView):
     perrmisson_class = [IsAuthenticated]
     def post(self,request,appSignature):
         username = request.data['username']
+  
         password = request.data['password']
         if username == '':
             return Response({'error':"Ma'lumotlarni to'ldiring"},status=status.HTTP_203_NON_AUTHORITATIVE_INFORMATION)
