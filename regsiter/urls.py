@@ -18,5 +18,9 @@ urlpatterns = [
     path('delete_categor/<int:pk>/',DeleteCategorViews.as_view(),name='delete_categor'),
 
     # notification
-    path('notification_admin/',notification_admin,name='notification_admin')
+    path('notification_admin/',notification_admin,name='notification_admin'),
+    path('deteile_notifi/<int:id>/',deteile_notifi,name='deteile_notifi'),
+    path('verification/<int:id>/',verification,name='verification'),
+    path('rejection/<int:id>/',rejection,name='rejection'),
+    path('delete_notification/<int:id>/',delete_notification,name='delete_notification')
 ]

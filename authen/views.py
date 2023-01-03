@@ -101,7 +101,7 @@ class CreateClientView(APIView):
     def post(self,request,appSignature):
         username = request.data['username']
         password = request.data['password']
-        if username=='':
+        if username == '':
             return Response({'error':"Ma'lumotlarni to'ldiring"},status=status.HTTP_203_NON_AUTHORITATIVE_INFORMATION)
         us = CustumUsers.objects.filter(username=username)
         if len(us)!=0:
@@ -111,7 +111,7 @@ class CreateClientView(APIView):
         my_user.save_product()
         gr = Group.objects.get(name= 'Client')
         my_user.groups.add(gr)
-        toke =get_token_for_user(my_user)
+        toke = get_token_for_user(my_user)
         return Response({'msg':toke},status=status.HTTP_200_OK)
 
 class UserSiginInViews(APIView):

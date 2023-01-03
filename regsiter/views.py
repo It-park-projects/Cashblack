@@ -100,3 +100,27 @@ def notification_admin(request):
     context = {}
     context['objects_list'] = NotifikationsSendClient.objects.all().order_by('-id')
     return render(request,'register/all_noti.html',context)
+@login_required
+def deteile_notifi(request,id):
+    objects = NotifikationsSendClient.objects.filter(id=id)
+    return render(request,'register/deteile_noti.html',{'objects':objects})
+
+@login_required
+def verification(request,id):
+    notification = NotifikationsSendClient.objects.filter(id=id)[0]
+    notification.status_id = 3
+    notification.save()
+    return redirect('notification_admin')
+
+@login_required
+def rejection(request,id):
+    notification = NotifikationsSendClient.objects.filter(id=id)[0]
+    notification.status_id = 2
+    notification.save()
+    return redirect('notification_admin')
+
+@login_required
+def delete_notification(request,id):
+    note = NotifikationsSendClient.objects.get(id=id)
+    note.delete()
+    return redirect('notification_admin')

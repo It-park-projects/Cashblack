@@ -35,6 +35,12 @@ class CreateBillingsSerializer(serializers.ModelSerializer):
         return balance_create
 
 
+class NotificationStatusse(serializers.ModelSerializer):
+    class Meta:
+        model = NotificationStatus
+        fields = '__all__'
+
+
 class AllNotificationSmsSerializers(serializers.ModelSerializer):
     shop_id = ShopsSerializers(read_only=True)
     class Meta:
@@ -49,7 +55,6 @@ class CreateNotificationSmsSerializers(serializers.ModelSerializer):
         notification_create = NotifikationsSendClient.objects.create(
             title = validate_date['title'],
             content = validate_date['content'],
-            status_id = validate_date['status_id'],
             author_id = self.context.get('author_id'),
             shop_id = self.context.get('shop_id')
         )   

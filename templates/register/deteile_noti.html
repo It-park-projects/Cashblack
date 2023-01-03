@@ -1,0 +1,38 @@
+{% extends  'register/base.html' %}
+{% load static %}
+{% block title %} <title>E'lonlar</title> {% endblock %}
+
+{% block content %}
+
+
+<div class="row mt-4">
+    <div class="col-xl-12">
+        <div class="card">
+            {% for item in objects %}
+            <div class="card-header">
+                <h4 class="card-title text-center">{{item.title}}</h4>
+                <p class="card-title-desc text-danger">{{error}}</p>
+            </div>
+            <div class="card-body">
+                {% if item.img %}
+                    <img src="{{item.img.url}}" style="width: 10%;" alt="{{item.title}}">
+                {% endif %}
+                <br>
+                <br>
+                {{item.content}}
+                
+                <br>
+                <br>
+                <a href="{% url 'verification' item.id %}" class="btn btn-primary">Tadiqlash</a>
+
+                <a href="{% url 'rejection' item.id %}" class="btn btn-danger">Rad etish</a>
+            </div>
+            {% endfor %}
+        </div>
+        <!-- end card -->
+    </div> <!-- end col -->
+
+</div>
+
+
+{% endblock %}

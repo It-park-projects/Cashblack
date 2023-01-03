@@ -18,7 +18,7 @@ class NotifikationsSendClient(models.Model):
     title = models.CharField(max_length=250,null=True,blank=True)
     content = models.TextField(null=True,blank=True)
     img = models.ImageField(upload_to='notifikation/',null=True,blank=True)
-    status_id = models.ForeignKey(NotificationStatus,on_delete=models.CASCADE,null=True,blank=True)
+    status_id = models.IntegerField(default=1,null=True,blank=True)
     shop_id = models.ForeignKey(Shops,on_delete=models.CASCADE,null=True,blank=True)
     author_id = models.ForeignKey(CustumUsers,on_delete=models.CASCADE,null=True,blank=True)
     date = models.DateField(auto_now_add=True)

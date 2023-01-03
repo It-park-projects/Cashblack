@@ -21,15 +21,37 @@
                     </tr>
                     </thead>
                     {% for item in objects_list %}
-                    <tr>
-                        <td class="text-center">{{forloop.counter}}</td>
-                        <td class="text-center">{{item.shop_id}}</td>
-                        <td class="text-center">{{item.date}}</td>
-                        <td class="text-center">
-                            <a href="" class="btn btn-soft-success waves-effect waves-light"><i class="bi bi-eye font-size-16 align-middle color-dark"></i></a>
-                            <a href="" class="btn btn-soft-danger waves-effect waves-light"><i class="bx bx-trash font-size-16 align-middle"></i></a>
-                        </td>
-                    </tr>
+                        {% if item.status_id == 2 %}
+                        <tr style="background-color: rgb(237, 165, 165);">
+                            <td class="text-center" style="font-weight: bold;">{{forloop.counter}}</td>
+                            <td class="text-center" style="font-weight: bold;">{{item.shop_id}}</td>
+                            <td class="text-center" style="font-weight: bold;">{{item.date}}</td>
+                            <td class="text-center" style="font-weight: bold;">
+                                <a href="{% url 'deteile_notifi' item.id %}" class="btn btn-soft-success waves-effect waves-light"><i class="bi bi-eye font-size-16 align-middle color-dark"></i></a>
+                                <a href="{% url 'delete_notification' item.id %}" class="btn btn-soft-danger waves-effect waves-light"><i class="bx bx-trash font-size-16 align-middle"></i></a>
+                            </td>
+                        </tr>
+                        {% elif item.status_id == 3 %}
+                        <tr style="background-color: rgb(191, 242, 210);">
+                            <td class="text-center" style="font-weight: bold;">{{forloop.counter}}</td>
+                            <td class="text-center" style="font-weight: bold;">{{item.shop_id}}</td>
+                            <td class="text-center" style="font-weight: bold;">{{item.date}}</td>
+                            <td class="text-center" style="font-weight: bold;">
+                                <a href="{% url 'deteile_notifi' item.id %}" class="btn btn-soft-success waves-effect waves-light"><i class="bi bi-eye font-size-16 align-middle color-dark"></i></a>
+                                <a href="{% url 'delete_notification' item.id %}" class="btn btn-soft-danger waves-effect waves-light"><i class="bx bx-trash font-size-16 align-middle"></i></a>
+                            </td>
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <td class="text-center" style="font-weight: bold;">{{forloop.counter}}</td>
+                            <td class="text-center" style="font-weight: bold;">{{item.shop_id}}</td>
+                            <td class="text-center" style="font-weight: bold;">{{item.date}}</td>
+                            <td class="text-center" style="font-weight: bold;">
+                                <a href="{% url 'deteile_notifi' item.id %}" class="btn btn-soft-success waves-effect waves-light"><i class="bi bi-eye font-size-16 align-middle color-dark"></i></a>
+                                <a href="{% url 'delete_notification' item.id %}" class="btn btn-soft-danger waves-effect waves-light"><i class="bx bx-trash font-size-16 align-middle"></i></a>
+                            </td>
+                        </tr>
+                        {% endif %}
                     {% endfor %}
                 </table>
             </div>
