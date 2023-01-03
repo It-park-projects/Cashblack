@@ -1,0 +1,42 @@
+{% extends  'register/base.html' %}
+{% load static %}
+{% block title %} <title>E'lonlar</title> {% endblock %}
+
+{% block content %}
+
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h4 class="card-title">E'lonlar</h4>
+            </div>
+            <div class="card-body">
+                <table id="datatable" class="table table-bordered  dt-responsive nowrap w-100">
+                    <thead class="table-dark">
+                    <tr class="text-center">
+                        <th style="width: 5%;">id</th>
+                        <th style="width: 50%;">Do'kon nomi</th>
+                        <th style="width: 35%;">Kelgan vaqti</th>
+                        <th style="width: 10%;">Harakatlar</th>
+                    </tr>
+                    </thead>
+                    {% for item in objects_list %}
+                    <tr>
+                        <td class="text-center">{{forloop.counter}}</td>
+                        <td class="text-center">{{item.shop_id}}</td>
+                        <td class="text-center">{{item.date}}</td>
+                        <td class="text-center">
+                            <a href="" class="btn btn-soft-success waves-effect waves-light"><i class="bi bi-eye font-size-16 align-middle color-dark"></i></a>
+                            <a href="" class="btn btn-soft-danger waves-effect waves-light"><i class="bx bx-trash font-size-16 align-middle"></i></a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </table>
+            </div>
+        </div>
+        <!-- end cardaa -->
+    </div> <!-- end col -->
+</div>
+
+
+{% endblock %}

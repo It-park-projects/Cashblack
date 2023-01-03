@@ -11,7 +11,7 @@ urlpatterns = [
     path('all_distrik_view/',AllDistricViews.as_view()),
 
     path('client_category/',ClientCategory.as_view()),
-    path('client_shops/<int:id>/',ClientShops.as_view()),
+    path('client_shops/<int:pk>/',ClientShops.as_view()),
     path('client_shops_statistics/<int:id>/',ClientShopsStatistics.as_view()),
     path('client_shop_filter/<int:id>/<str:start_date>/<str:end_date>/',ClientShopStatisticsGet.as_view()),
 

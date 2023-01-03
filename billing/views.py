@@ -39,19 +39,29 @@ class AllNotificationsViews(APIView):
     render_classes = [UserRenderers]
     perrmisson_class = [IsAuthenticated]
     def get(self,request,format=None):
-        for item in request.user.shops_id.all():
-            x = item.id
-        notification = NotifikationsSendClient.objects.filter(shop_id=x)
+        notification = NotifikationsSendClient.objects.filter(author_id=request.user.id)
         serializers = AllNotificationSmsSerializers(notification,many=True)
         return Response(serializers.data,status=status.HTTP_200_OK)
     def post(self,request,format=None):
         shop = Shops.objects.get(user_id=request.user.id)
-        serializers = CreateNotificationSmsSerializers(data=request.data,context={'author_id':request.user,'shop_id':shop})
+        serializers = CreateNotificationSmsSerializers(data=request.data,context={'author_id':request.user,'shop_id':shop,'status_id':1})
         if serializers.is_valid(raise_exception = True):
             serializers.save()
             return Response({'msg':"Send notifications"},status=status.HTTP_201_CREATED)
         return Response(serializers.errors,status=status.HTTP_400_BAD_REQUEST)
     
+
+class AllClientNotificationView(APIView):
+    render_classes = [UserRenderers]
+    perrmisson_class = [IsAuthenticated]
+    def get(self,request,format=None):
+        for item in request.user.shops_id.all():
+            x = item.id
+        notification = NotifikationsSendClient.objects.filter(shop_id=x,status_id=3)
+        serializers = AllNotificationSmsSerializers(notification,many=True)
+        return Response(serializers.data,status=status.HTTP_200_OK)
+
+
 class SendNotificationForUserViews(APIView):
     def get(self,request,format=None):
         try:

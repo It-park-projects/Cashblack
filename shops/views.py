@@ -143,6 +143,7 @@ class ClientCategory(APIView):
     def get(self,request,format=None):
         title = []
         id_ = []
+        img = []
         z = []
         for sh in Cashbacks.objects.filter(client=request.user.id):
             title.append(sh.shops.categor_id.title)
@@ -153,13 +154,16 @@ class ClientCategory(APIView):
 class ClientShops(APIView):
     render_classes = [UserRenderers]
     perrmisson_class = [IsAuthenticated]
-    def get(self,request,id,format=None):
-        x= []
-        for item in request.user.shops_id.all():
-            if item.categor_id.id == id:
-                x.append({'id':item.id,'name_shop':item.name_shops,})
-      
-        return Response(x,status=status.HTTP_200_OK)
+    def get(self,request,pk,format=None):
+        _id = []
+        name = []
+        ls = []
+        cat = Cataegor.objects.get(id=pk)
+        for item in Cashbacks.objects.filter(client=request.user.id,shops__categor_id=cat.id):
+            _id.append(item.shops.id)
+            name.append(item.shops.name_shops)
+        ls.append({'id':set(_id)})
+        return Response(ls,status=status.HTTP_200_OK)
 
 class ClientShopsStatistics(APIView):
     render_classes = [UserRenderers]

@@ -49,7 +49,7 @@ class CreateNotificationSmsSerializers(serializers.ModelSerializer):
         notification_create = NotifikationsSendClient.objects.create(
             title = validate_date['title'],
             content = validate_date['content'],
-            img =  validate_date['img'],
+            status_id = validate_date['status_id'],
             author_id = self.context.get('author_id'),
             shop_id = self.context.get('shop_id')
         )   
@@ -61,3 +61,15 @@ class CreateNotificationSmsSerializers(serializers.ModelSerializer):
         instance.img = validate_data.get('img',instance.img)
         instance.save()
         return instance
+
+
+class NotificationShopSerializers(serializers.ModelSerializer):
+    class Meta:
+        model = Shops
+        fields = ['id','name_shops','brand_img',]
+
+class AllNotificationClientSerializers(serializers.ModelSerializer):
+    shop_id = NotificationShopSerializers(read_only=True)
+    class Meta:
+        model = NotifikationsSendClient
+        fields =  ['title','content','img','shop_id','date',]

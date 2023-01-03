@@ -15,5 +15,8 @@ urlpatterns = [
     path('all_ctageor/',all_ctageor,name='all_ctageor'),
     path('create_categor/',CreateCategorViews.as_view(),name='create_categor_views'),
     path('update_catgeor/<int:pk>/',UpdateCategorViews.as_view(),name='update_catgeor'),
-    path('delete_categor/<int:pk>/',DeleteCategorViews.as_view(),name='delete_categor')
+    path('delete_categor/<int:pk>/',DeleteCategorViews.as_view(),name='delete_categor'),
+
+    # notification
+    path('notification_admin/',notification_admin,name='notification_admin')
 ]

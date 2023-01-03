@@ -7,6 +7,7 @@ from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.urls import reverse_lazy
 from regsiter.models import *
 from regsiter.forms import *
+from billing.models import *
 
 def sigin_in(request):
     context = {}
@@ -94,3 +95,8 @@ class DeleteCategorViews(DeleteView):
     success_url = reverse_lazy('all_ctageor')
 
 
+@login_required
+def notification_admin(request):
+    context = {}
+    context['objects_list'] = NotifikationsSendClient.objects.all().order_by('-id')
+    return render(request,'register/all_noti.html',context)
