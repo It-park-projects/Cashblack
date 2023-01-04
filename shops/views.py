@@ -73,7 +73,7 @@ class ClientSellView(APIView):
     def post(self,request,barcode_id,is_cashback,format=None):
         check_barcode = get_object_or_404(CustumUsers,barcode_id = barcode_id)
         check_cashbeck_sell = Cashbacks.objects.filter(client = check_barcode).first()
-        serializers = CrudCashbakSerializers(data=request.data,context={'client_id':check_barcode, "user_id":request.user.id,'is_cashback':is_cashback,'check_cashbeck_sell':check_cashbeck_sell})
+        serializers = CrudCashbakSerializers(data=request.data,context={'client_id':check_barcode.id, "user_id":request.user.id,'shops':request.user.shops_id.all(),'is_cashback':is_cashback,'check_cashbeck_sell':check_cashbeck_sell})
         if serializers.is_valid(raise_exception=True):
             serializers.save()
             return Response({'msg':'Create Sucsess'},status=status.HTTP_201_CREATED)
