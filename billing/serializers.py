@@ -57,13 +57,6 @@ class CreateNotificationSmsSerializers(serializers.ModelSerializer):
         notification_create = NotifikationsSendClient.objects.create(**validate_date)
         notification_create.shop_id = self.context.get('shop_id')
         notification_create.author_id = self.context.get('author_id')
-        #     title = validate_date['title'],
-        #     content = validate_date['content'], 
-        #     author_id = self.context.get('author_id'),
-        #     img = validate_date['img'].FILES,
-        #     shop_id = self.context.get('shop_id')
-        # )   
-        
         return notification_create
     def update(self,instance,validate_data):
         instance.title = validate_data.get('title',instance.title)

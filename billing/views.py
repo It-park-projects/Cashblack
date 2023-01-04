@@ -45,7 +45,8 @@ class AllNotificationsViews(APIView):
         serializers = AllNotificationSmsSerializers(notification,many=True)
         return Response(serializers.data,status=status.HTTP_200_OK)
     def post(self,request,format=None):
-        shop = Shops.objects.get(user_id=request.user.id)
+        # shop = Shops.objects.get(user_id=request.user.id)
+        shop = get_object_or_404(Shops,user_id=request.user.id) 
         serializers = CreateNotificationSmsSerializers(data=request.data,context={'author_id':request.user,'shop_id':shop})
         if serializers.is_valid(raise_exception = True):
             serializers.save(
