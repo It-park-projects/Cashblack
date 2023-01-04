@@ -48,7 +48,9 @@ class AllNotificationsViews(APIView):
         shop = Shops.objects.get(user_id=request.user.id)
         serializers = CreateNotificationSmsSerializers(data=request.data,context={'author_id':request.user,'shop_id':shop})
         if serializers.is_valid(raise_exception = True):
-            serializers.save()
+            serializers.save(
+                img = request.data.get('img')
+            )
             return Response({'msg':"Send notifications"},status=status.HTTP_201_CREATED)
         return Response(serializers.errors,status=status.HTTP_400_BAD_REQUEST)
     

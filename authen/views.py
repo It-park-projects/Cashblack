@@ -35,20 +35,19 @@ class AllGroupsViews(APIView):
 class UserSiginUpViews(APIView):
     render_classes = [UserRenderers]
     def get(self,request,format=None):
-        groups = Group.objects.all()
+        groups = Group.objects.all()    
         serializers = AllGroupsSerializers(groups,many=True)
         return Response(serializers.data,status=status.HTTP_201_CREATED)
     def post(self,request,appSignature):
         username = request.data['username']
         password= request.data['password']
-        promo_code = request.data['promo_code']
         if username == "":
             context = {"Tel Raqam Kiritilmadi"}
             return Response(context,status=status.HTTP_401_UNAUTHORIZED)
         us = CustumUsers.objects.filter(username=username)
         if len(us)!=0:
             return Response({'error':"Bunday foydalanuvchi mavjud"},status=status.HTTP_203_NON_AUTHORITATIVE_INFORMATION)      
-        my_user = CustumUsers.objects.create(username=username,appSignature=appSignature,promo_code=promo_code)
+        my_user = CustumUsers.objects.create(username=username,appSignature=appSignature)
         my_user.set_password(password)
         my_user.save_product()
         toke =get_token_for_user(my_user)
