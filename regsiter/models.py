@@ -25,7 +25,7 @@ class Distric(models.Model):
     def __str__(self):
         return self.name
 class Shops(models.Model):
-    name_shops = models.CharField(max_length=250,null=True,blank=True,unique=True)
+    name_shops = models.CharField(max_length=250,null=True,blank=True)
     brand_img = models.ImageField(upload_to='brands/',null=True,blank=True)
     cashback = models.IntegerField(null=True,blank=True)
     categor_id = models.ForeignKey(Cataegor,on_delete=models.CASCADE,null=True,blank=True)

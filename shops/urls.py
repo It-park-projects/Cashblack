@@ -5,6 +5,7 @@ from shops.views import *
 urlpatterns = [
     path('shops_views/',UserShops.as_view()),
     path('shops_update_view/<int:pk>/',ShopsUpdateViews.as_view()),
+    # path('update_shops/<int:id>/',update_shops),
     path('all_categor_views/',AllCategorViews.as_view()),
     path('all_province_view/',AllProvinceViews.as_view()),
     path('all_distrik_view/',AllDistricViews.as_view()),

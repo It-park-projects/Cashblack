@@ -93,7 +93,7 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'NAME': 'Cashback',
-        'PASSWORD': '123',
+        'PASSWORD': '1',
         'USER': 'postgres',
         'HOST': '127.0.0.1',
         'PORT': '5432',
@@ -200,7 +200,8 @@ CORS_ALLOWED_ORIGINS = [
     "http://localhost:8080",
     "https://3e84-185-250-206-164.eu.ngrok.io",
     "http://192.168.137.22:8080",
-    'http://34.73.83.172'
+    'http://34.73.83.172',
+    "http://176.96.243.117:9000"
 ]
 
 
