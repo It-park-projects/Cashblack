@@ -37,15 +37,9 @@ class ShopsSerializers(serializers.ModelSerializer):
         model = Shops
         fields = ['id','name_shops','brand_img','cashback','categor_id','provinse_id','distrik_id','user_id',]
     def create(self, validated_data):
-        create_shop = Shops.objects.create(
-            name_shops = validated_data['name_shops'],
-            brand_img = None,
-            cashback = validated_data['cashback'],
-            categor_id = validated_data['categor_id'],
-            provinse_id = validated_data['provinse_id'],
-            distrik_id = validated_data['distrik_id'],
-            user_id = self.context.get('user_id')
-        )
+        create_shop = Shops.objects.create(**validated_data)
+        create_shop.user_id = self.context.get('user_id')
+        
         try:
             user_get = CustumUsers.objects.get(id = self.context.get('user_id'))
         except CustumUsers.DoesNotExist:

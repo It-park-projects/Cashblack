@@ -45,7 +45,7 @@ class UserShops(APIView):
     def post(self,request,format=None):
         serializers = ShopsSerializers(data=request.data,context={'user_id':request.user.id})
         if serializers.is_valid(raise_exception=True):
-            serializers.save()
+            serializers.save(brand_img = request.data.get('brand_img'))
             return Response({'msg':'Create Sucsess'},status=status.HTTP_201_CREATED)
         return Response(serializers.errors,status=status.HTTP_400_BAD_REQUEST)
 class ShopsUpdateViews(APIView):
@@ -59,7 +59,7 @@ class ShopsUpdateViews(APIView):
         data = request.data
         serializers = ShopsSerializers(instance=Shops.objects.filter(id=pk)[0],data=data,partial=True)
         if serializers.is_valid(raise_exception=True):
-            serializers.save()
+            serializers.save(brand_img = request.data.get('brand_img'))
             return Response({'message':"success update"},status=status.HTTP_200_OK)
         return Response({'error':'update error data'},status=status.HTTP_400_BAD_REQUEST)
 
@@ -140,29 +140,35 @@ class ClientCategory(APIView):
     render_classes = [UserRenderers]
     perrmisson_class = [IsAuthenticated]
     def get(self,request,format=None):
-        title = []
-        id_ = []
-        img = []
-        z = []
-        for sh in Cashbacks.objects.filter(client=request.user.id):
-            title.append(sh.shops.categor_id.title)
-            id_.append(sh.shops.categor_id.id)
-        z.append({'id':set(id_),'name': set(title)})
-        return Response(z,status=status.HTTP_200_OK)
+        list_categories = []
+        list_cate_all = []
+        for i in request.user.shops_id.all():
+            list_categories.append({
+                'id':i.categor_id.id,
+                'name':i.categor_id.title,
+                'image':i.categor_id.logo.url
+            })
+        for k in dict((v['id'],v) for v in list_categories).values():
+            list_cate_all.append({
+                'id':k['id'],
+                'name':k['name'],
+                'logo':k['image']
+            })
+        return Response(list_cate_all,status=status.HTTP_200_OK)
 
 class ClientShops(APIView):
     render_classes = [UserRenderers]
     perrmisson_class = [IsAuthenticated]
     def get(self,request,pk,format=None):
-        _id = []
-        name = []
-        ls = []
-        cat = Cataegor.objects.get(id=pk)
-        for item in Cashbacks.objects.filter(client=request.user.id,shops__categor_id=cat.id):
-            _id.append(item.shops.id)
-            name.append(item.shops.name_shops)
-        ls.append({'id':set(_id)})
-        return Response(ls,status=status.HTTP_200_OK)
+        list_shop = []
+        for i in request.user.shops_id.all():
+            if i.categor_id.id == pk:
+                list_shop.append({
+                    'id':i.id,
+                    'name_shop': i.name_shops,
+                    'brand_img':i.brand_img.url
+                })
+        return Response(list_shop,status=status.HTTP_200_OK)
 
 class ClientShopsStatistics(APIView):
     render_classes = [UserRenderers]
