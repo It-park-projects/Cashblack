@@ -7,6 +7,7 @@ urlpatterns = [
     path('allClient_notification_view/',AllClientNotificationView.as_view()),
     path('notification/',SendNotificationForUserViews.as_view()),
 
-    path('CreateCardUSer/',CreateCardUSer.as_view())
+    path('payment_send_card/',PaymentSendCard.as_view()),
+    path('payment_confirm_card/',PaymentConfirmCard.as_view()),
     
 ]

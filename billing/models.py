@@ -3,10 +3,16 @@ from regsiter.models import *
 
 
 class Blance(models.Model):
-    blance = models.CharField(max_length=250,null=True,blank=True)
+    amount = models.CharField(max_length=250,null=True,blank=True)
+    card_number = models.CharField(max_length=250,null=True,blank=True)
+    expire_date = models.CharField(max_length=100,null=True,blank=True)
+    extra_id = models.CharField(max_length=250,null=True,blank=True)
     user_id = models.ForeignKey(CustumUsers,on_delete=models.CASCADE,null=True,blank=True)
     shop_id = models.ForeignKey(Shops,on_delete=models.CASCADE,null=True,blank=True)
-    payment_date = models.DateField(auto_now=False,auto_now_add=True)
+    payment_date = models.DateTimeField(auto_now=False,auto_now_add=True)
+
+    def __str__(self):
+        return self.card_number
 
 class NotificationStatus(models.Model):
     name = models.CharField(max_length=250,null=True,blank=True)
@@ -29,21 +35,3 @@ class NotifikationsSendClient(models.Model):
         return self.title
 
     
-class Balnse(models.Model):
-    card_numer = models.CharField(max_length=250)
-    date = models.CharField(max_length=250)
-    user_id = models.ForeignKey(CustumUsers,on_delete=models.CASCADE)
-
-    def __str__(self):
-        return self.card_numer
-
-
-class PaymentSum(models.Model):
-    card_number = models.CharField(max_length=250)
-    expire_date = models.CharField(max_length=250)
-    amount = models.CharField(max_length=250)
-    user_id = models.CharField(max_length=250,null=True,blank=True)
-    date = models.DateTimeField(auto_now_add=True)
-
-    def __str__(self):
-        return self.card_number

@@ -21,5 +21,6 @@ urlpatterns = [
     path('statistics_filter/',StatisticsCashbacksFilter.as_view()),
 
     path('cashbacks_day_statistics/<str:start_date>/<str:end_date>/',CashbackStatistics.as_view()),
+    
 
 ]

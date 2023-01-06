@@ -17,7 +17,11 @@ from billing.models import *
 from billing.serializers import *
 from dateutil.relativedelta import relativedelta
 from datetime import date
+import requests
+import json
+import base64
 from billing.uzcard_settings import *
+
 
 
 class MyBlance(APIView):
@@ -82,19 +86,52 @@ class SendNotificationForUserViews(APIView):
         return Response({'msg':"sdsdsd"})
 
 
-class CreateCardUSer(APIView):
+class PaymentSendCard(APIView):
     render_classes = [UserRenderers]    
     perrmisson_class = [IsAuthenticated]
+    
+    usrPass = "texnolike:myuU3te4N01!KE"
+    data_bytes = usrPass.encode("utf-8")
+    b64Val = base64.b64encode(data_bytes)
     def post(self,request):
         card_number = request.data['card_number']
         expire_date = request.data['expire_date']
         amount = request.data['amount']
-
-        if card_number == '':
+        if card_number == '' or expire_date=='' or amount=='':
             return Response({'error':"Ma'lumotlarni to'ldiring"},status=status.HTTP_203_NON_AUTHORITATIVE_INFORMATION)
         code_s = str(random.randint(10000,99999))
-        my_user = PaymentSum.objects.create(card_number=card_number,expire_date=expire_date,amount=amount,user_id=code_s)
-
+        for item in request.user.shops_id.all():
+            x = item
+        my_user = Blance.objects.create(card_number=card_number,expire_date=expire_date,amount=amount,extra_id=code_s,user_id=request.user,shop_id=x)
         my_user.save()
-        create_user_card(amount,card_number,expire_date,code_s) 
-        return Response({'msg':'ok'},status=status.HTTP_200_OK)
+        url = "https://pay.myuzcard.uz/api/Payment/paymentWithoutRegistration"
+        token = b64Val
+        payload = json.dumps({
+            "amount": f"{amount}",
+            "cardNumber": f"{card_number}",
+            "expireDate": f"{expire_date}",
+            "extraId": f"{code_s}"
+
+        })
+        headers = {
+            'Accept': 'application/json',
+            'Authorization': 'Basic'+" "+token.decode('utf-8'),
+            'Content-Type': 'application/json'
+        }
+        response = requests.post(url,  headers=headers, data=payload)
+        x = json.loads(response.text)
+        print(x['result']['session'])
+        # confirmUserCard(x['result']['session'])
+        return Response({'msg':x['result']['session']},status=status.HTTP_200_OK)
+
+class PaymentConfirmCard(APIView):
+    render_classes = [UserRenderers]    
+    perrmisson_class = [IsAuthenticated]
+    def post(self,request):
+        session = request.data['session']
+        otp = request.data['otp']
+        if session == '' or otp=='':
+            return Response({'error':"Ma'lumotlarni to'ldiring"},status=status.HTTP_203_NON_AUTHORITATIVE_INFORMATION)
+        confirmUserCard(session,otp)
+        return Response({'msg':'Tolov qabul qilindi'},status=status.HTTP_200_OK)
+

@@ -19,7 +19,7 @@ class BalanceSerializers(serializers.ModelSerializer):
     shop_id = ShopsSerializers(read_only=True)
     class Meta:
         model = Blance
-        fields = ['id','blance','user_id','shop_id','payment_date']
+        fields = ['id','amount','user_id','shop_id','payment_date']
 
 class CreateBillingsSerializer(serializers.ModelSerializer):
     class Meta:
