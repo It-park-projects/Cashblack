@@ -130,9 +130,20 @@ class ClientShopsStatistics(APIView):
     perrmisson_class = [IsAuthenticated]
     def get(self,request,id,format=None):
         x= []
-        try: get_shop =  Cashbacks.objects.get(shops__id=id,client = request.user.id)
-        except Cashbacks.DoesNotExist: get_shop = None
-        x.append({'price':get_shop.price,'csh_persent':get_shop.shops.cashback,'csh':int(get_shop.price) * (get_shop.shops.cashback / 100),'date':get_shop.date})
+        for item in Cashbacks.objects.filter(shops__id=id,client = request.user.id):
+            sum_price += int(item.price)
+            sum_cashback += int(item.price) 
+            x.append({
+                'name':item.shops.first_name,
+                'sum_price':sum_price,
+                'sum_cashback':sum_cashback
+            })
+
+
+
+        # try: get_shop =  Cashbacks.objects.get(shops__id=id,client = request.user.id)
+        # except Cashbacks.DoesNotExist: get_shop = None
+        # x.append({'price':get_shop.price,'csh_persent':get_shop.shops.cashback,'csh':int(get_shop.price) * (get_shop.shops.cashback / 100),'date':get_shop.date})
         return Response(x,status=status.HTTP_200_OK)
     
 class ClientShopStatisticsGet(APIView):
