@@ -54,15 +54,34 @@ class UserUpdateSerializers(serializers.ModelSerializer):
             client_create.groups.add(i.id)
         client_create.save_product()
         return client_create
-    def update(self,instance,validate_data):
-        instance.first_name = validate_data.get('first_name',instance.first_name)
-        instance.last_name = validate_data.get('last_name',instance.last_name)
-        instance.username = validate_data.get('username',instance.username)
-        instance.set_password(validate_data.get('password',instance.password))
-        instance.shops_id.set(self.context.get('user_id'))
-        instance.code_s = validate_data.get('code_s',instance.code_s)
+    def update(self,instance,validated_data):
+        instance.first_name = validated_data.get('first_name',instance.first_name)
+        instance.last_name = validated_data.get('last_name',instance.last_name)
+        instance.username = validated_data.get('username',instance.username)
+        instance.set_password(validated_data.get('password',instance.password))
+        for i in self.context.get('user_id').all():
+            instance.shops_id.add(i)
+            # instance.save()
+        # instance.shops_id.set(self.context.get('user_id'))
+        instance.code_s = validated_data.get('code_s',instance.code_s)
+        instance.save()
+
+        return instance
+
+class UserPhoneUpdateSerializers(serializers.ModelSerializer):
+    class Meta:
+        model = CustumUsers
+        fields = ['username','password','code_s',]
+
+    def update(self,instance,validated_data):
+        instance.username = validated_data.get('username',instance.username)
+        instance.set_password(validated_data.get('password',instance.password))
+        instance.code_s = validated_data.get('code_s',instance.code_s)
+
         instance.save()
         return instance
+
+
 class ClientUserUpdateSerializers(serializers.ModelSerializer):
     class Meta:
         model = CustumUsers

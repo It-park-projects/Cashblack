@@ -30,7 +30,7 @@ class ShopsAllSerializers(serializers.ModelSerializer):
     distrik_id = AllDistricSerializers(read_only=True)
     class Meta:
         model = Shops
-        fields = ['id','name_shops','cashback','categor_id','provinse_id','distrik_id','user_id',]
+        fields = ['id','name_shops','brand_img','cashback','categor_id','provinse_id','distrik_id','user_id',]
 
 class ShopsSerializers(serializers.ModelSerializer):
     class Meta:

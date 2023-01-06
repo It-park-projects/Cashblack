@@ -41,13 +41,14 @@ class UserSiginUpViews(APIView):
     def post(self,request,appSignature):
         username = request.data['username']
         password= request.data['password']
+        promo_code = request.data['promo_code']
         if username == "":
             context = {"Tel Raqam Kiritilmadi"}
             return Response(context,status=status.HTTP_401_UNAUTHORIZED)
         us = CustumUsers.objects.filter(username=username)
         if len(us)!=0:
             return Response({'error':"Bunday foydalanuvchi mavjud"},status=status.HTTP_203_NON_AUTHORITATIVE_INFORMATION)      
-        my_user = CustumUsers.objects.create(username=username,appSignature=appSignature)
+        my_user = CustumUsers.objects.create(username=username,appSignature=appSignature,promo_code=promo_code)
         my_user.set_password(password)
         my_user.save_product()
         toke =get_token_for_user(my_user)
@@ -76,7 +77,10 @@ class CreateSotrutnikView(APIView):
         us = CustumUsers.objects.filter(username=username)
         if len(us)!=0:
             return Response({'error':"Bunday foydalanuvchi mavjud"},status=status.HTTP_203_NON_AUTHORITATIVE_INFORMATION)
-        s = Shops.objects.get(user_id=request.user.id)
+        try:
+            s = Shops.objects.get(user_id=request.user.id)
+        except Shops.DoesNotExist:
+            s = None
         my_user = CustumUsers.objects.create(username=username,first_name=first_name,last_name=last_name,)
         my_user.set_password(password)
         my_user.save_product()
@@ -142,7 +146,7 @@ class UpdatePhoneUpdateView(APIView):
             code_s = str(random.randint(10000,99999))
             us.code_s=code_s
             us.save()
-            send_message(us.username,us.code_s)
+            send_message(us.username,us.code_s) 
             return Response({"msg":'Saqlandi'},status=status.HTTP_200_OK)
         return Response(serializers.errors,status=status.HTTP_400_BAD_REQUEST)
 
@@ -232,6 +236,7 @@ class ShopsClientViews(APIView):
     perrmisson_class = [IsAuthenticated]
     def get(self,request):
         shop = Shops.objects.get(user_id=request.user.id)
+        print(shop)
         user = CustumUsers.objects.filter(shops_id=shop.id)
         serializers = ShopsClientSerializers(user,many=True)
         return Response(serializers.data,status=status.HTTP_200_OK)

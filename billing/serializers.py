@@ -57,6 +57,7 @@ class CreateNotificationSmsSerializers(serializers.ModelSerializer):
         notification_create = NotifikationsSendClient.objects.create(**validate_date)
         notification_create.shop_id = self.context.get('shop_id')
         notification_create.author_id = self.context.get('author_id')
+        notification_create.save()
         return notification_create
 
     def update(self,instance,validate_data):

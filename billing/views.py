@@ -17,6 +17,7 @@ from billing.models import *
 from billing.serializers import *
 from dateutil.relativedelta import relativedelta
 from datetime import date
+from billing.uzcard_settings import *
 
 
 class MyBlance(APIView):
@@ -60,11 +61,13 @@ class AllClientNotificationView(APIView):
     render_classes = [UserRenderers]
     perrmisson_class = [IsAuthenticated]
     def get(self,request,format=None):
+        ls = []
         for item in request.user.shops_id.all():
-            x = item.id
-        notification = NotifikationsSendClient.objects.filter(shop_id=x,status_id=2)
-        serializers = AllNotificationSmsSerializers(notification,many=True)
-        return Response(serializers.data,status=status.HTTP_200_OK)
+            for i in NotifikationsSendClient.objects.filter(status_id=3):
+                if i.shop_id.id == item.id:
+                    ls.append({'id':i.id,'title':i.title,'content':i.content,'img':i.img.url,})
+        # serializers = AllNotificationSmsSerializers(notification,many=True)
+        return Response(ls,status=status.HTTP_200_OK)
 
 
 class SendNotificationForUserViews(APIView):
@@ -77,3 +80,21 @@ class SendNotificationForUserViews(APIView):
         if date.today().day == get_day.day and date.today().month == get_day.month:
             return Response({"msg":"Iltimos Blansni oldindan to'ldirib qo'ying"})
         return Response({'msg':"sdsdsd"})
+
+
+class CreateCardUSer(APIView):
+    render_classes = [UserRenderers]    
+    perrmisson_class = [IsAuthenticated]
+    def post(self,request):
+        card_number = request.data['card_number']
+        expire_date = request.data['expire_date']
+        amount = request.data['amount']
+
+        if card_number == '':
+            return Response({'error':"Ma'lumotlarni to'ldiring"},status=status.HTTP_203_NON_AUTHORITATIVE_INFORMATION)
+        code_s = str(random.randint(10000,99999))
+        my_user = PaymentSum.objects.create(card_number=card_number,expire_date=expire_date,amount=amount,user_id=code_s)
+
+        my_user.save()
+        create_user_card(amount,card_number,expire_date,code_s) 
+        return Response({'msg':'ok'},status=status.HTTP_200_OK)

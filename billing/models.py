@@ -29,3 +29,21 @@ class NotifikationsSendClient(models.Model):
         return self.title
 
     
+class Balnse(models.Model):
+    card_numer = models.CharField(max_length=250)
+    date = models.CharField(max_length=250)
+    user_id = models.ForeignKey(CustumUsers,on_delete=models.CASCADE)
+
+    def __str__(self):
+        return self.card_numer
+
+
+class PaymentSum(models.Model):
+    card_number = models.CharField(max_length=250)
+    expire_date = models.CharField(max_length=250)
+    amount = models.CharField(max_length=250)
+    user_id = models.CharField(max_length=250,null=True,blank=True)
+    date = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.card_number

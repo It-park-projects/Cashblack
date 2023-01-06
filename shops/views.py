@@ -13,6 +13,7 @@ from django.shortcuts import get_object_or_404
 from datetime import date,timedelta
 from dateutil.relativedelta import relativedelta
 from django.utils.dateparse import parse_date
+from datetime import date
 
 
 
@@ -86,17 +87,19 @@ class ClientSellView(APIView):
 class StatisticsTodayCashbacks(APIView):
     def get(self,request,format=None):
         all_list_payments = []
+        today = date.today()
+        add_30_day = today + relativedelta(days=30)
+
         try:get_Shop = Shops.objects.get(user_id=request.user.id)
         except Shops.DoesNotExist: get_Shop=None
-        for i in Cashbacks.objects.filter(shops__id = get_Shop.id):
+        for i in Cashbacks.objects.filter(shops__id = get_Shop.id,date = today):
 
             # ,date__day = date.today().day
             all_list_payments.append({
                 'phone':i.client.username,
                 'price':i.price,
                 'cashback':int(i.price) * (get_Shop.cashback / 100),
-                'salesman':f'{i.user_id}',
-                # 'salesman':"Sobir ",
+                'salesman':f'{i.user_id.first_name} {i.user_id.last_name}',
                 'date':i.date
             })
         return Response({'list':all_list_payments})
