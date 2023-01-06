@@ -16,7 +16,7 @@ from regsiter.models import *
 from billing.models import *
 from billing.serializers import *
 from dateutil.relativedelta import relativedelta
-from datetime import date
+from datetime import date, timedelta, datetime
 import requests
 import json
 import base64
@@ -104,6 +104,7 @@ class PaymentSendCard(APIView):
             x = item
         my_user = Blance.objects.create(card_number=card_number,expire_date=expire_date,amount=amount,extra_id=code_s,user_id=request.user,shop_id=x)
         my_user.save()
+        shop = Shops.objects.filter(user_id=request.user.id).update(is_payment=True)
         url = "https://pay.myuzcard.uz/api/Payment/paymentWithoutRegistration"
         token = b64Val
         payload = json.dumps({
@@ -135,3 +136,19 @@ class PaymentConfirmCard(APIView):
         confirmUserCard(session,otp)
         return Response({'msg':'Tolov qabul qilindi'},status=status.HTTP_200_OK)
 
+class CloseBalance(APIView):
+    render_classes = [UserRenderers]
+    perrmisson_class = [IsAuthenticated]
+    def get(self,request):
+        data = request.user
+        get_amount = Blance.objects.filter(user_id = request.user).last()
+        print((get_amount.amount))
+        add_month = get_amount.payment_date + relativedelta(months=1)
+        print(add_month)
+        if datetime.today().strftime('%Y-%m-%d') == (add_month - timedelta(days=5)).strftime('%Y-%m-%d') or datetime.today().strftime('%Y-%m-%d') == (add_month - timedelta(days=4)).strftime('%Y-%m-%d') or datetime.today() == (add_month - timedelta(days=3)).strftime('%Y-%m-%d') or datetime.today() == (add_month - timedelta(days=2)).strftime('%Y-%m-%d') or datetime.today() == (add_month - timedelta(days=1)).strftime('%Y-%m-%d') :
+            return Response({"msg":"Iltimos balansingizni to'ldiring"})
+        get_shop = Shops.objects.filter(user_id=request.user.id)[0]
+        print(get_shop.name_shops)
+        if datetime.today().strftime('%Y-%m-%d') >= add_month.strftime('%Y-%m-%d') and get_shop.is_payment == True:
+            get_shop1 = Shops.objects.filter(user_id=request.user.id).update(is_payment = False)
+        return Response({"msg":False})
