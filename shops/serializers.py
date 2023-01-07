@@ -86,19 +86,19 @@ class CrudCashbakSerializers(serializers.ModelSerializer):
                 print(q)
                 get_update_client_shop.shops_id.add(q)
                 get_update_client_shop.save()            
-            # if self.context.get('is_cashback') == "False":
-            #     # print(False)
-            #     if SaveCashback.objects.filter(cashbak_id = get_cashbacks).first() == None:
-            #         save_cashback = SaveCashback.objects.create(cashback = cashback_divide,cashbak_id = create_client_sell)
-            #     else:
-            #         try:cashback = SaveCashback.objects.get(cashbak_id = get_cashbacks)
-            #         except SaveCashback.DoesNotExist:cashback = None
-            #         save_cashback = SaveCashback.objects.filter(cashbak_id = get_cashbacks).update(cashback = cashback.cashback + cashback_divide) 
-            # else:
-            #     # print(True)
-            #     try:cashback = SaveCashback.objects.get(cashbak_id = get_cashbacks)
-            #     except SaveCashback.DoesNotExist:cashback = None
-            #     save_cashback = SaveCashback.objects.filter(cashbak_id = get_cashbacks).update(cashback = (cashback.cashback - float(replace_number)) + cashback_divide) 
+            if self.context.get('is_cashback') == "False":
+                # print(False)
+                if SaveCashback.objects.filter(cashbak_id = get_cashbacks).first() == None:
+                    save_cashback = SaveCashback.objects.create(cashback = cashback_divide,cashbak_id = create_client_sell)
+                else:
+                    try:cashback = SaveCashback.objects.get(cashbak_id = get_cashbacks)
+                    except SaveCashback.DoesNotExist:cashback = None
+                    save_cashback = SaveCashback.objects.filter(cashbak_id = get_cashbacks).update(cashback = cashback.cashback + cashback_divide)
+            else:
+                # print(True)
+                try:cashback = SaveCashback.objects.get(cashbak_id = get_cashbacks)
+                except SaveCashback.DoesNotExist:cashback = None
+                save_cashback = SaveCashback.objects.filter(cashbak_id = get_cashbacks).update(cashback = (cashback.cashback - float(replace_number)) + cashback_divide)
             
             return create_client_sell 
      

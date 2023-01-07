@@ -59,8 +59,8 @@ class UserUpdateSerializers(serializers.ModelSerializer):
         instance.last_name = validated_data.get('last_name',instance.last_name)
         instance.username = validated_data.get('username',instance.username)
         instance.set_password(validated_data.get('password',instance.password))
-        for i in self.context.get('user_id').all():
-            instance.shops_id.add(i)
+        # for i in self.context.get('user_id').all():
+        #     instance.shops_id.add(i)
             # instance.save()
         # instance.shops_id.set(self.context.get('user_id'))
         instance.code_s = validated_data.get('code_s',instance.code_s)

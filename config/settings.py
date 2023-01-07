@@ -93,7 +93,7 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'NAME': 'Cashback',
-        'PASSWORD': '1',
+        'PASSWORD': '05769452sobir@',
         'USER': 'postgres',
         'HOST': '127.0.0.1',
         'PORT': '5432',

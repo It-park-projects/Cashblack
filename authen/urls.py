@@ -6,7 +6,7 @@ urlpatterns = [
     path('user_sigin_up_views/<str:appSignature>/',UserSiginUpViews.as_view()),
     path('user_sigin_in_views/',UserSiginInViews.as_view()),
     path('user_profiles_views/',UserProfilesViews.as_view()),
-    path('user_phone_update/<int:pk>/',UpdatePhoneUpdateView.as_view()),
+    path('user_phone_update/<int:pk>/<str:appSignature>/',UpdatePhoneUpdateView.as_view()),
     path('user_update_fullname/<int:pk>/',UserUpdateFullNameViews.as_view()),
     path('create_clients/',ClientCreateViews.as_view()),
     path('update_clients/<int:pk>/',ClientsUpdateViews.as_view()),

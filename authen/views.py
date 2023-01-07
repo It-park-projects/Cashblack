@@ -137,16 +137,17 @@ class UserSiginInViews(APIView):
 class UpdatePhoneUpdateView(APIView):
     render_classes = [UserRenderers]
     perrmisson_class = [IsAuthenticated]
-    def put(self,request,pk,format=None):
+    def put(self,request,pk,appSignature,format=None):
         data = request.data
-        serializers = UserUpdateSerializers(instance=CustumUsers.objects.filter(id=pk)[0] ,data=data,partial =True)
+        serializers = UserUpdateSerializers(instance=CustumUsers.objects.filter(id=pk)[0] ,data=data,partial =True,context={'user_id':request.user})
         if serializers.is_valid(raise_exception=True):
             serializers.save()
             us = CustumUsers.objects.filter(id=pk)[0]
             code_s = str(random.randint(10000,99999))
             us.code_s=code_s
             us.save()
-            send_message(us.username,us.code_s) 
+            print(us.username)
+            send_message(us.username,code_s,appSignature)
             return Response({"msg":'Saqlandi'},status=status.HTTP_200_OK)
         return Response(serializers.errors,status=status.HTTP_400_BAD_REQUEST)
 
