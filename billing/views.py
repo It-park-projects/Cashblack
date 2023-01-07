@@ -97,6 +97,8 @@ class PaymentSendCard(APIView):
         card_number = request.data['card_number']
         expire_date = request.data['expire_date']
         amount = request.data['amount']
+        shops = Shops.objects.get(user_id=request.user.id)
+        print(shops)
         if card_number == '' or expire_date=='' or amount=='':
             return Response({'error':"Ma'lumotlarni to'ldiring"},status=status.HTTP_203_NON_AUTHORITATIVE_INFORMATION)
         code_s = str(random.randint(10000,99999))
