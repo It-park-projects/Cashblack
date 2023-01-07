@@ -17,10 +17,10 @@ urlpatterns = [
 
     path('cashbak_create/<int:barcode_id>/<str:is_cashback>/',ClientSellView.as_view()),
     
-    path('statistics_today/',StatisticsTodayCashbacks.as_view()),
-    path('statistics_filter/',StatisticsCashbacksFilter.as_view()),
+    path('cashback_one_month_statistics/',StatisticsTodayCashbacks.as_view()),
+    path('cashbacks_filter_statistics/<str:start_date>/<str:end_date>/',StatisticsCashbacksFilter.as_view()),
 
-    path('cashbacks_day_statistics/<str:start_date>/<str:end_date>/',CashbackStatistics.as_view()),
+    path('statistics_summa/<int:pk>/',StatistikaSumma.as_view())
     
 
 ]

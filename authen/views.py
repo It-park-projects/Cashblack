@@ -77,10 +77,7 @@ class CreateSotrutnikView(APIView):
         us = CustumUsers.objects.filter(username=username)
         if len(us)!=0:
             return Response({'error':"Bunday foydalanuvchi mavjud"},status=status.HTTP_203_NON_AUTHORITATIVE_INFORMATION)
-        try:
-            s = Shops.objects.get(user_id=request.user.id)
-        except Shops.DoesNotExist:
-            s = None
+        s = Shops.objects.filter(user_id=request.user.id)[0]
         my_user = CustumUsers.objects.create(username=username,first_name=first_name,last_name=last_name,)
         my_user.set_password(password)
         my_user.save_product()
@@ -137,16 +134,17 @@ class UserSiginInViews(APIView):
 class UpdatePhoneUpdateView(APIView):
     render_classes = [UserRenderers]
     perrmisson_class = [IsAuthenticated]
-    def put(self,request,pk,format=None):
+    def put(self,request,pk,appSignature,format=None):
         data = request.data
-        serializers = UserUpdateSerializers(instance=CustumUsers.objects.filter(id=pk)[0] ,data=data,partial =True)
+        serializers = UserUpdateSerializers(instance=CustumUsers.objects.filter(id=pk)[0] ,data=data,partial =True,context={'user_id':request.user})
         if serializers.is_valid(raise_exception=True):
             serializers.save()
             us = CustumUsers.objects.filter(id=pk)[0]
             code_s = str(random.randint(10000,99999))
             us.code_s=code_s
             us.save()
-            send_message(us.username,us.code_s) 
+            print(us.username)
+            send_message(us.username,code_s,appSignature)
             return Response({"msg":'Saqlandi'},status=status.HTTP_200_OK)
         return Response(serializers.errors,status=status.HTTP_400_BAD_REQUEST)
 
@@ -240,5 +238,6 @@ class ShopsClientViews(APIView):
         user = CustumUsers.objects.filter(shops_id=shop.id)
         serializers = ShopsClientSerializers(user,many=True)
         return Response(serializers.data,status=status.HTTP_200_OK)
+
 
 
