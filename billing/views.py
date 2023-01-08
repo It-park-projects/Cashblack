@@ -29,7 +29,6 @@ class MyBlance(APIView):
     perrmisson_class = [IsAuthenticated]
     def get(self,request,format=None):
         balans =  Balans.objects.filter(shop_id__user_id=request.user.id)
-        print(balans)
         serializers = BalanceSerializers(balans,many=True)
         return Response(serializers.data,status=status.HTTP_200_OK)
     
@@ -157,16 +156,10 @@ class HistoryPayment(APIView):
         return Response(serializers.data,status=status.HTTP_200_OK)
 
 
-class CloseBalance(APIView):
+class BlanceView(APIView):
     render_classes = [UserRenderers]
     perrmisson_class = [IsAuthenticated]
-    def get(self,request):
-        data = request.user
-        get_amount =  Balans.objects.filter(shop_id__user_id=request.user.id)
-
-        print(get_amount)
-        # add_month = get_amount.payment_date + relativedelta(months=1)
-        # get_shop = Shops.objects.filter(user_id=request.user.id)[0]
-        # if datetime.today().strftime('%Y-%m-%d') >= add_month.strftime('%Y-%m-%d') and get_shop.is_payment == True:
-        #     get_shop1 = Shops.objects.filter(user_id=request.user.id).update(is_payment = False)
-        return Response({"msg":False})
+    def get(self,request,format=None):
+        balans =  Balans.objects.filter(shop_id__user_id=request.user.id)
+        
+        return Response({'data':"s"},status=status.HTTP_200_OK)
