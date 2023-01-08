@@ -107,7 +107,7 @@ class StatisticsCashbacksFilter(APIView):
         for l in range(delta.days + 1):
             days = parse_date(start_date) + timedelta(days=l)
             for i in Cashbacks.objects.filter(shops__id=get_Shop.id,date__day = days.day,date__month=days.month,date__year = days.year):
-                all_list_payments.append({'full_name':i.client.first_name +" "+i.client.last_name,'phone':i.client.username,'price':i.price,'cashback':int(i.price) * (get_Shop.cashback // 100),'salesman':f'{i.user_id.first_name} {i.user_id.last_name}','date':i.date,})
+                all_list_payments.append({'full_name':i.client.first_name +" "+i.client.last_name,'phone':i.client.username,'price':i.price,'cashback':int(i.price) * (get_Shop.cashback / 100),'salesman':f'{i.user_id.first_name} {i.user_id.last_name}','date':i.date,})
         return Response({'list':all_list_payments})
 
 class ClientCategory(APIView):
@@ -191,14 +191,28 @@ class StatistikaSumma(APIView):
             separete_cashaback = sum_cashback - sum_close_cashback
         return Response({'client':list_sts_client,'sum_price':sum_price,'sum_cashback':sum_cashback,'sum_close_cashback':sum_close_cashback,'separete_cashaback':separete_cashaback})
 
-class StatistikaSummaa(APIView):
+class StatistikaSummaView(APIView):
     render_classes = [UserRenderers]
     perrmisson_class = [IsAuthenticated]
     def get(self,request,format=None):
-        # for item in request.user.shops_id.all():
-        #     print(item)
-        print(request.user.id)
-        return Response({"masg":'data'},status=status.HTTP_200_OK)
+        list_sts_client = []
+        sum_price = 0
+        sum_cashback = 0
+        sum_close_cashback = 0
+        print(request.user)
+        for shop in request.user.shops_id.all():
+            x = CustumUsers.objects.filter(shops_id=shop.id)
+
+        for k in x:
+            for l in Cashbacks.objects.filter(client=k).values('client').annotate(name=Count('client'),sums=Sum('price')).values('client','name','sums'):
+                print(l)
+                list_sts_client.append({
+                    'name':k.first_name+" "+k.last_name,
+                    'phone':k.username,
+                    'sums':l['sums'],
+                    'cashbak':l['sums'] * (shop.cashback / 100)                    
+                })
+        return Response(list_sts_client)
 
      # get_Shop = Shops.objects.filter(user_id=request.user.id)[0]
         # for item in CustumUsers.shops_id.filter()
