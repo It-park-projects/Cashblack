@@ -21,7 +21,7 @@ urlpatterns = [
     path('cashbacks_filter_statistics/<str:start_date>/<str:end_date>/',StatisticsCashbacksFilter.as_view()),
 
     path('statistics_summa/<int:pk>/',StatistikaSumma.as_view()),
-    path('StatistikaSummaa/',StatistikaSummaa.as_view()),
+    path('statistika_summa_view/',StatistikaSummaView.as_view()),
     
 
 ]

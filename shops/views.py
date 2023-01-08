@@ -191,14 +191,28 @@ class StatistikaSumma(APIView):
             separete_cashaback = sum_cashback - sum_close_cashback
         return Response({'client':list_sts_client,'sum_price':sum_price,'sum_cashback':sum_cashback,'sum_close_cashback':sum_close_cashback,'separete_cashaback':separete_cashaback})
 
-class StatistikaSummaa(APIView):
+class StatistikaSummaView(APIView):
     render_classes = [UserRenderers]
     perrmisson_class = [IsAuthenticated]
     def get(self,request,format=None):
-        # for item in request.user.shops_id.all():
-        #     print(item)
-        print(request.user.id)
-        return Response({"masg":'data'},status=status.HTTP_200_OK)
+        list_sts_client = []
+        sum_price = 0
+        sum_cashback = 0
+        sum_close_cashback = 0
+        print(request.user)
+        for shop in request.user.shops_id.all():
+            x = CustumUsers.objects.filter(shops_id=shop.id)
+
+        for k in x:
+            for l in Cashbacks.objects.filter(client=k).values('client').annotate(name=Count('client'),sums=Sum('price')).values('client','name','sums'):
+                print(l)
+                list_sts_client.append({
+                    'name':k.first_name+" "+k.last_name,
+                    'phone':k.username,
+                    'sums':l['sums'],
+                    'cashbak':l['sums'] * (shop.cashback / 100)                    
+                })
+        return Response(list_sts_client)
 
      # get_Shop = Shops.objects.filter(user_id=request.user.id)[0]
         # for item in CustumUsers.shops_id.filter()
