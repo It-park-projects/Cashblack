@@ -66,12 +66,16 @@ class ShopsUpdateViews(APIView):
         return Response({'error':'update error data'},status=status.HTTP_400_BAD_REQUEST)
 
 
-
-        
-
 class ClientSellView(APIView):
     render_classes = [UserRenderers]
     perrmisson_class = [IsAuthenticated]
+    def get(self, request, barcode_id,is_cashback, format=None):
+        ls = []
+        for item in CustumUsers.objects.filter(barcode_id=barcode_id):
+            ls.append({"id":item.id,'full_name':item.first_name + ' ' + item.last_name,'username': item.username})
+        return Response({'data':ls},status=status.HTTP_400_BAD_REQUEST)
+
+
     def post(self,request,barcode_id,is_cashback,format=None):
         check_barcode = get_object_or_404(CustumUsers,barcode_id = barcode_id)
         check_cashbeck_sell = Cashbacks.objects.filter(client = check_barcode).first()
@@ -88,12 +92,14 @@ class StatisticsTodayCashbacks(APIView):
     render_classes = [UserRenderers]
     perrmisson_class = [IsAuthenticated]
     def get(self,request,format=None):
+        for item in request.user.shops_id.all():
+            x = item.id
         all_list_payments = []
-        get_Shop = Shops.objects.filter(user_id=request.user.id).first()
+        # get_Shop = Shops.objects.filter(user_id=request.user.id).first()
         for k in range(((datetime.today() - (datetime.today() - relativedelta(days=31))+ timedelta(days=1))).days + 1):
             days = datetime.today() - timedelta(days=k)
-            for i in Cashbacks.objects.filter(shops__id = get_Shop.id,date__day = days.day,date__month=days.month,date__year = days.year).annotate(day=TruncDay('date')).values('day').annotate(dCount=Count('date'), sums=Sum('price')).values('day', 'dCount', 'sums'):
-                all_list_payments.append({'date':i['day'],'sum_price':i['sums'],'sum_cashback':i['sums'] * (get_Shop.cashback / 100)})
+            for i in Cashbacks.objects.filter(shops__id = x,date__day = days.day,date__month=days.month,date__year = days.year).annotate(day=TruncDay('date')).values('day').annotate(dCount=Count('date'), sums=Sum('price')).values('day', 'dCount', 'sums'):
+                all_list_payments.append({'date':i['day'],'sum_price':i['sums'],'sum_cashback':i['sums'] * (x.cashback / 100)})
         return Response({'list':all_list_payments})
 
 class StatisticsCashbacksFilter(APIView):

@@ -238,8 +238,10 @@ class ShopsClientViews(APIView):
     render_classes = [UserRenderers]
     perrmisson_class = [IsAuthenticated]
     def get(self,request):
-        shop = Shops.objects.get(user_id=request.user.id)
-        user = CustumUsers.objects.filter(shops_id=shop.id,groups__name__in = ['Client'])
+        for item in request.user.shops_id.all():
+            x = item.id
+        # shop = Shops.objects.get(user_id=request.user.id)
+        user = CustumUsers.objects.filter(shops_id=x,groups__name__in = ['Client'])
         serializers = ShopsClientSerializers(user,many=True)
         return Response(serializers.data,status=status.HTTP_200_OK)
 
