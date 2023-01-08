@@ -5,6 +5,7 @@ from regsiter.models import *
 from django.contrib.auth.models import User
 from shops.models import Cashbacks, SaveCashback
 from billing.models import *
+import  datetime
 
 class AllUserSerializers(serializers.ModelSerializer):
     class Meta:
@@ -49,7 +50,7 @@ class ShopsSerializers(serializers.ModelSerializer):
         user_get.shops_id.add(create_shop.id)
         user_get.save()
         shop = Shops.objects.filter(user_id=self.context.get("user_id")).last()
-        blanse = Balans(shop_id=shop)
+        blanse = Balans(shop_id=shop,last_date=datetime.datetime.today())
         blanse.save()
         return create_shop
     def update(self, instance, validated_data):

@@ -19,6 +19,7 @@ class Balans(models.Model):
     shop_id = models.ForeignKey(Shops,on_delete=models.CASCADE,null=True,blank=True)
     payment_id = models.ForeignKey(PaymentHistory,on_delete=models.CASCADE,null=True,blank=True)
     is_date = models.BooleanField(default=False,null=True,blank=True)
+    last_date = models.DateTimeField(null=True,blank=True)
     date = models.DateTimeField(auto_now_add=True)
 
    

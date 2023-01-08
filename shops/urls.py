@@ -20,7 +20,8 @@ urlpatterns = [
     path('cashback_one_month_statistics/',StatisticsTodayCashbacks.as_view()),
     path('cashbacks_filter_statistics/<str:start_date>/<str:end_date>/',StatisticsCashbacksFilter.as_view()),
 
-    path('statistics_summa/<int:pk>/',StatistikaSumma.as_view())
+    path('statistics_summa/<int:pk>/',StatistikaSumma.as_view()),
+    path('StatistikaSummaa/',StatistikaSummaa.as_view()),
     
 
 ]

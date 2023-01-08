@@ -20,6 +20,8 @@ from datetime import date, timedelta, datetime
 import requests
 import json
 import base64
+import datetime
+import pytz
 from billing.uzcard_settings import *
 
 
@@ -160,6 +162,24 @@ class BlanceView(APIView):
     render_classes = [UserRenderers]
     perrmisson_class = [IsAuthenticated]
     def get(self,request,format=None):
-        balans =  Balans.objects.filter(shop_id__user_id=request.user.id)
-        
-        return Response({'data':"s"},status=status.HTTP_200_OK)
+        # shop = Shops.objects.filter(user_id=request.user.id)[0]
+        # print(shop)
+        utc = pytz.UTC
+
+        datetime_start = utc.localize(datetime.datetime.today())
+        balans = Balans.objects.filter(shop_id__user_id=request.user.id)[0]
+        add_date = balans.last_date + relativedelta(months=1)
+        print(datetime_start)
+        if bool(datetime_start.strftime('%Y-%m-%d') >= add_date.strftime('%Y-%m-%d')):
+            if balans.amunt >= balans.shop_id.payment_summ:
+                m = int(balans.amunt) - int(balans.shop_id.payment_summ)
+                balans.amunt = str(m)
+                balans.is_date = True
+                balans.last_date = datetime.datetime.today()
+                balans.save()
+                return Response({'data': "Yechildi"}, status=status.HTTP_200_OK)
+            else:
+                balans.is_date = False
+                balans.save()
+                return Response({'data': "Hisobingizda mablag'z yetarli emas"}, status=status.HTTP_203_NON_AUTHORITATIVE_INFORMATION)
+        return Response({'data': "Hisobingiz toldirildi"}, status=status.HTTP_200_OK)
