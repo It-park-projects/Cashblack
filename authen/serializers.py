@@ -28,7 +28,7 @@ class UserPorfilesSerializers(serializers.ModelSerializer):
     shops_id = ShopsAllSerializers(read_only = True,many=True)
     class Meta:
         model = CustumUsers
-        fields = ['id','username','first_name','last_name','groups','shops_id',]
+        fields = ['id','username','first_name','last_name','groups','shops_id','barcode_id','barcode',]
 
 
 class UpdateFullNameSerializers(serializers.ModelSerializer):

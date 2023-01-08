@@ -4,6 +4,7 @@ from django.contrib.auth.hashers import make_password
 from regsiter.models import *
 from django.contrib.auth.models import User
 from shops.models import Cashbacks, SaveCashback
+from billing.models import *
 
 class AllUserSerializers(serializers.ModelSerializer):
     class Meta:
@@ -44,8 +45,12 @@ class ShopsSerializers(serializers.ModelSerializer):
             user_get = CustumUsers.objects.get(id = self.context.get('user_id'))
         except CustumUsers.DoesNotExist:
             user_get = None
+        
         user_get.shops_id.add(create_shop.id)
         user_get.save()
+        shop = Shops.objects.filter(user_id=self.context.get("user_id")).last()
+        blanse = Balans(shop_id=shop)
+        blanse.save()
         return create_shop
     def update(self, instance, validated_data):
         instance.name_shops = validated_data.get('name_shops',instance.name_shops)

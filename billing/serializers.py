@@ -15,20 +15,26 @@ class UserSerializers(serializers.ModelSerializer):
         fields = ['id','username','first_name','last_name',]
 
 class BalanceSerializers(serializers.ModelSerializer):
-    user_id = UserSerializers(read_only=True)
     shop_id = ShopsSerializers(read_only=True)
     class Meta:
-        model = Blance
-        fields = ['id','amount','user_id','shop_id','payment_date']
+        model = Balans
+        fields = ['id','amunt','is_date','date','shop_id',]
+
+class HistoryPamentSerialzers(serializers.ModelSerializer):
+    shop_id = ShopsSerializers(read_only=True)
+    class Meta:
+        model = PaymentHistory
+        fields = ['id','amount','card_number','expire_date','shop_id','payment_date',]
+
 
 class CreateBillingsSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Blance
+        model = Balans
         fields = '__all__'
     def create(self,validate_date):
         get_number = str(validate_date.get('blance'))
         replace_number = get_number.replace(' ','')
-        balance_create  = Blance.objects.create(
+        balance_create  = Balans.objects.create(
             blance = replace_number,
             user_id = self.context.get('user_id'),
             shop_id = self.context.get('shop_id')  
@@ -53,10 +59,19 @@ class CreateNotificationSmsSerializers(serializers.ModelSerializer):
     class Meta:
         model = NotifikationsSendClient
         fields =  '__all__'
-    def create(self, validate_date):
-        notification_create = NotifikationsSendClient.objects.create(**validate_date)
+    def create(self, validated_date):
+        notification_create = NotifikationsSendClient.objects.create(**validated_date)
         notification_create.shop_id = self.context.get('shop_id')
-        notification_create.author_id = self.context.get('author_id')
+        notification_create.user_id = self.context.get("user_id")
+
+        # print(self.context.get("user_id"))
+        shop = Shops.objects.get(user_id=self.context.get("users_id"))
+        balans = Balans.objects.get(shop_id=shop.id)
+        for item in NotificationStatus.objects.all():
+            if int(balans.amunt) <= int(item.name):
+                raise serializers.ValidationError({"error":"Hisobingizda yetarli mablag' mavjud emas"})
+        summ = int(balans.amunt)-int(item.name)
+        balans_confirm = Balans.objects.filter(shop_id=shop.id).update(amunt=str(summ))
         notification_create.save()
         return notification_create
 

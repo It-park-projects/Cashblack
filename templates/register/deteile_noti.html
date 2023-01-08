@@ -23,9 +23,16 @@
                 
                 <br>
                 <br>
+                {% if item.status_id == 2 %}
+                    
+                {% elif item.status_id == 3 %}
+                
+                {% else %}
+
                 <a href="{% url 'verification' item.id %}" class="btn btn-primary">Tadiqlash</a>
 
                 <a href="{% url 'rejection' item.id %}" class="btn btn-danger">Rad etish</a>
+                {% endif %}
             </div>
             {% endfor %}
         </div>

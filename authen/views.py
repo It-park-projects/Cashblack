@@ -67,6 +67,11 @@ class UserSiginUpViews(APIView):
 class CreateSotrutnikView(APIView):
     render_classes = [UserRenderers]
     perrmisson_class = [IsAuthenticated]
+    def get(self,request):
+        shop = Shops.objects.get(user_id=request.user.id)
+        user = CustumUsers.objects.filter(shops_id=shop.id,groups__name__in = ['Sotrutnik'])
+        serializers = ShopsClientSerializers(user,many=True)
+        return Response(serializers.data,status=status.HTTP_200_OK)
     def post(self,request,format=None):
         username = request.data['username']
         password = request.data['password']
@@ -234,8 +239,7 @@ class ShopsClientViews(APIView):
     perrmisson_class = [IsAuthenticated]
     def get(self,request):
         shop = Shops.objects.get(user_id=request.user.id)
-        print(shop)
-        user = CustumUsers.objects.filter(shops_id=shop.id)
+        user = CustumUsers.objects.filter(shops_id=shop.id,groups__name__in = ['Client'])
         serializers = ShopsClientSerializers(user,many=True)
         return Response(serializers.data,status=status.HTTP_200_OK)
 

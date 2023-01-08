@@ -28,8 +28,9 @@ class MyBlance(APIView):
     render_classes = [UserRenderers]
     perrmisson_class = [IsAuthenticated]
     def get(self,request,format=None):
-        blance =  Blance.objects.filter(user_id=request.user.id)
-        serializers = BalanceSerializers(blance,many=True)
+        balans =  Balans.objects.filter(shop_id__user_id=request.user.id)
+        print(balans)
+        serializers = BalanceSerializers(balans,many=True)
         return Response(serializers.data,status=status.HTTP_200_OK)
     
     def post(self,request,format=None):
@@ -46,13 +47,13 @@ class AllNotificationsViews(APIView):
     perrmisson_class = [IsAuthenticated]
     # parser_classes = (FileUploadParser, MultiPartParser, FormParser,JSONParser)
     def get(self,request,format=None):
-        notification = NotifikationsSendClient.objects.filter(author_id=request.user.id)
+        notification = NotifikationsSendClient.objects.filter(user_id=request.user.id)
         serializers = AllNotificationSmsSerializers(notification,many=True)
         return Response(serializers.data,status=status.HTTP_200_OK)
     def post(self,request,format=None):
         # shop = Shops.objects.get(user_id=request.user.id)
         shop = get_object_or_404(Shops,user_id=request.user.id) 
-        serializers = CreateNotificationSmsSerializers(data=request.data,context={'author_id':request.user,'shop_id':shop})
+        serializers = CreateNotificationSmsSerializers(data=request.data,context={'user_id':request.user,'shop_id':shop,'users_id':request.user.id})
         if serializers.is_valid(raise_exception = True):
             serializers.save(
                 img = request.data.get('img')
@@ -77,8 +78,8 @@ class AllClientNotificationView(APIView):
 class SendNotificationForUserViews(APIView):
     def get(self,request,format=None):
         try:
-            get_users_payment_date = Blance.objects.get(user_id=request.user.id)
-        except Blance.DoesNotExist:
+            get_users_payment_date = Balans.objects.get(user_id=request.user.id)
+        except Balans.DoesNotExist:
             get_users_payment_date = None
         get_day = (get_users_payment_date.payment_date + relativedelta(months=1))-relativedelta(days=3)
         if date.today().day == get_day.day and date.today().month == get_day.month:
@@ -98,15 +99,11 @@ class PaymentSendCard(APIView):
         expire_date = request.data['expire_date']
         amount = request.data['amount']
         shops = Shops.objects.get(user_id=request.user.id)
-        print(shops)
         if card_number == '' or expire_date=='' or amount=='':
             return Response({'error':"Ma'lumotlarni to'ldiring"},status=status.HTTP_203_NON_AUTHORITATIVE_INFORMATION)
+        if int(shops.payment_summ) >= int(amount):
+             return Response({'error':"Eng kam miqdor" + ' ' + shops.payment_summ + ' ' + "Bo'lishi kerak"},status=status.HTTP_203_NON_AUTHORITATIVE_INFORMATION)
         code_s = str(random.randint(10000,99999))
-        for item in request.user.shops_id.all():
-            x = item
-        my_user = Blance.objects.create(card_number=card_number,expire_date=expire_date,amount=amount,extra_id=code_s,user_id=request.user,shop_id=x)
-        my_user.save()
-        shop = Shops.objects.filter(user_id=request.user.id).update(is_payment=True)
         url = "https://pay.myuzcard.uz/api/Payment/paymentWithoutRegistration"
         token = b64Val
         payload = json.dumps({
@@ -123,34 +120,53 @@ class PaymentSendCard(APIView):
         }
         response = requests.post(url,  headers=headers, data=payload)
         x = json.loads(response.text)
-        print(x['result']['session'])
-        # confirmUserCard(x['result']['session'])
-        return Response({'msg':x['result']['session']},status=status.HTTP_200_OK)
+        return Response({'msg':x},status=status.HTTP_200_OK)
 
 class PaymentConfirmCard(APIView):
     render_classes = [UserRenderers]    
     perrmisson_class = [IsAuthenticated]
     def post(self,request):
+        card_number = request.data['card_number']
+        expire_date = request.data['expire_date']
+        amount = request.data['amount']
         session = request.data['session']
         otp = request.data['otp']
         if session == '' or otp=='':
             return Response({'error':"Ma'lumotlarni to'ldiring"},status=status.HTTP_203_NON_AUTHORITATIVE_INFORMATION)
         confirmUserCard(session,otp)
+        for item in request.user.shops_id.all():
+            x = item
+        my_user = PaymentHistory.objects.create(card_number=card_number,expire_date=expire_date,amount=amount,extra_id=session,user_id=request.user,shop_id=x)
+        my_user.save()
+        history = PaymentHistory.objects.filter(shop_id=x).last()
+        balans = Balans.objects.filter(shop_id=x)[0]
+        b = int(balans.amunt)+int(amount)
+        balans.shop_id=history.shop_id
+        balans.amunt=str(b)
+        balans.payment_id=history
+        balans.save()
+        # shop = Shops.objects.filter(shop_id=x).update(is_payment=True)
         return Response({'msg':'Tolov qabul qilindi'},status=status.HTTP_200_OK)
+
+class HistoryPayment(APIView):
+    render_classes = [UserRenderers]
+    perrmisson_class = [IsAuthenticated]
+    def get(self,request):
+        history =  PaymentHistory.objects.filter(user_id=request.user.id)
+        serializers = HistoryPamentSerialzers(history,many=True)
+        return Response(serializers.data,status=status.HTTP_200_OK)
+
 
 class CloseBalance(APIView):
     render_classes = [UserRenderers]
     perrmisson_class = [IsAuthenticated]
     def get(self,request):
         data = request.user
-        get_amount = Blance.objects.filter(user_id = request.user).last()
-        print((get_amount.amount))
-        add_month = get_amount.payment_date + relativedelta(months=1)
-        print(add_month)
-        if datetime.today().strftime('%Y-%m-%d') == (add_month - timedelta(days=5)).strftime('%Y-%m-%d') or datetime.today().strftime('%Y-%m-%d') == (add_month - timedelta(days=4)).strftime('%Y-%m-%d') or datetime.today() == (add_month - timedelta(days=3)).strftime('%Y-%m-%d') or datetime.today() == (add_month - timedelta(days=2)).strftime('%Y-%m-%d') or datetime.today() == (add_month - timedelta(days=1)).strftime('%Y-%m-%d') :
-            return Response({"msg":"Iltimos balansingizni to'ldiring"})
-        get_shop = Shops.objects.filter(user_id=request.user.id)[0]
-        print(get_shop.name_shops)
-        if datetime.today().strftime('%Y-%m-%d') >= add_month.strftime('%Y-%m-%d') and get_shop.is_payment == True:
-            get_shop1 = Shops.objects.filter(user_id=request.user.id).update(is_payment = False)
+        get_amount =  Balans.objects.filter(shop_id__user_id=request.user.id)
+
+        print(get_amount)
+        # add_month = get_amount.payment_date + relativedelta(months=1)
+        # get_shop = Shops.objects.filter(user_id=request.user.id)[0]
+        # if datetime.today().strftime('%Y-%m-%d') >= add_month.strftime('%Y-%m-%d') and get_shop.is_payment == True:
+        #     get_shop1 = Shops.objects.filter(user_id=request.user.id).update(is_payment = False)
         return Response({"msg":False})

@@ -1,6 +1,7 @@
 from rest_framework.response import Response
 from django.shortcuts import render,redirect
-
+from django.db.models.functions import TruncMonth,TruncDay
+from django.db.models import Count,Sum
 from rest_framework import permissions, status
 from rest_framework.decorators import api_view, schema
 from rest_framework.views import APIView
@@ -13,7 +14,7 @@ from django.shortcuts import get_object_or_404
 from datetime import date,timedelta
 from dateutil.relativedelta import relativedelta
 from django.utils.dateparse import parse_date
-from datetime import date
+from datetime import date,datetime
 
 
 
@@ -83,16 +84,21 @@ class ClientSellView(APIView):
             return Response({'msg':'Create Sucsess'},status=status.HTTP_201_CREATED)
         return Response(serializers.errors,status=status.HTTP_400_BAD_REQUEST)
 
+
 class StatisticsTodayCashbacks(APIView):
+    render_classes = [UserRenderers]
+    perrmisson_class = [IsAuthenticated]
     def get(self,request,format=None):
         all_list_payments = []
-        delta = (date.today() + relativedelta(days=31)) - date.today()
         get_Shop = Shops.objects.filter(user_id=request.user.id)[0]
-        for k in range(delta.days + 1):
-            days = date.today() + timedelta(days=k)
-            get_cashback_stores = Cashbacks.objects.filter(shops__id = get_Shop.id,date = days)
-            for i in get_cashback_stores:
-                all_list_payments.append({'phone': i.client.username,'price':i.price,'cashback':int(i.price) * (get_Shop.cashback / 100),'salesman':f'{i.user_id.first_name} {i.user_id.last_name}','date':i.date})
+        for l in Cashbacks.objects.all():
+            print(l.date)
+        for k in range(((datetime.today() - (datetime.today() - relativedelta(days=31))+ timedelta(days=1))).days + 1):
+            days = datetime.today() - timedelta(days=k)
+            for i in Cashbacks.objects.filter(shops__id = get_Shop.id,date__day = days.day,date__month=days.month,date__year = days.year).annotate(day=TruncDay('date')).values('day').annotate(dCount=Count('date'), sums=Sum('price')).values('day', 'dCount', 'sums'):
+                print(i)
+        #         all_list_payments.append({'date':i['day'],'sum_price':i['sums'],'sum_cashback':i['sums'] * (get_Shop.cashback / 100)})
+        # print(all_list_payments)
         return Response({'list':all_list_payments})
 
 class StatisticsCashbacksFilter(APIView):
@@ -103,7 +109,7 @@ class StatisticsCashbacksFilter(APIView):
         for l in range(delta.days+1):
             days = parse_date(start_date) + timedelta(days=l)
             for i in Cashbacks.objects.filter(shops__id=get_Shop.id, date = days):
-                all_list_payments.append({'phone':i.client.username,'price':i.price,'cashback':int(i.price) * (get_Shop.cashback / 100),'salesman':f'{i.user_id.first_name} {i.user_id.last_name}',})
+                all_list_payments.append({'phone':i.client.username,'price':i.price,'cashback':int(i.price) * (get_Shop.cashback / 100),'salesman':f'{i.user_id.first_name} {i.user_id.last_name}','date':i.date})
         return Response({'list':all_list_payments})
 
 class ClientCategory(APIView):

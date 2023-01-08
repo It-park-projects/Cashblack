@@ -116,6 +116,11 @@ def verification(request,id):
 def rejection(request,id):
     notification = NotifikationsSendClient.objects.filter(id=id)[0]
     notification.status_id = 2
+    balans = Balans.objects.get(shop_id=notification.shop_id)
+    for item in NotificationStatus.objects.all():
+            x = item.name
+    summ = int(balans.amunt)+int(item.name)
+    balans_confirm = Balans.objects.filter(shop_id=balans.shop_id).update(amunt=str(summ))
     notification.save()
     return redirect('notification_admin')
 
