@@ -74,7 +74,10 @@ class ClientSellView(APIView):
     def post(self,request,barcode_id,is_cashback,format=None):
         check_barcode = get_object_or_404(CustumUsers,barcode_id = barcode_id)
         check_cashbeck_sell = Cashbacks.objects.filter(client = check_barcode).first()
-        serializers = CrudCashbakSerializers(data=request.data,context={'client_id':check_barcode.id, "user_id":request.user.id,'shops':request.user.shops_id.all(),'is_cashback':is_cashback,'check_cashbeck_sell':check_cashbeck_sell})
+        for i in request.user.shops_id.all():
+            get_Shop = Shops.objects.filter(id =i.id)[0]
+        print(get_Shop.cashback)
+        serializers = CrudCashbakSerializers(data=request.data,context={'client_id':check_barcode.id, "user_id":request.user.id,'shops':request.user.shops_id.all(),'is_cashback':is_cashback,'check_cashbeck_sell':check_cashbeck_sell,'us':request.user,'get_Shop':get_Shop})
         if serializers.is_valid(raise_exception=True):
             serializers.save()
             return Response({'msg':'Create Sucsess'},status=status.HTTP_201_CREATED)
@@ -151,20 +154,24 @@ class ClientShopStatisticsGet(APIView):
 class StatistikaSumma(APIView):
     render_classes = [UserRenderers]
     perrmisson_class = [IsAuthenticated]
-    def get(self,request,format=None):
+    def get(self,request,pk,format=None):
         get_Shop = Shops.objects.filter(user_id=request.user.id)[0]
+        delta = (date.today() + relativedelta(days=31)) - date.today()
         sum_price = 0
         sum_cashback = 0
-        list_sts_sum = []
-        for i in CustumUsers.objects.all():
-            for k in Cashbacks.objects.filter(client = i.id, user_id=request.user).distinct():
-                sum_price += int(k.price)
-                sum_cashback += int(k.price) * (int(get_Shop.cashback)/100)
-                list_sts_sum.append({
-                'name':k.client.first_name+ " " + k.client.last_name,
+        sum_close_cashback = 0
+        list_sts_client = []
+        for i in Cashbacks.objects.filter(client = pk):
+            sum_price += int(i.price)
+            sum_cashback += int(i.price) * (get_Shop.cashback / 100)
+            list_sts_client.append({
+                'name':i.client.first_name+ " " + i.client.last_name,
+                'price':int(i.price),
                 'sum_price':sum_price,
+                'cashback': int(i.price) * (get_Shop.cashback / 100),
                 'sum_cashback':sum_cashback
             })
-        print(sum_price)
-        print(sum_cashback)
-        return Response(list_sts_sum,)
+            if i.is_cashback == True:
+                sum_close_cashback += int(i.price) * (get_Shop.cashback / 100)
+            separete_cashaback = sum_cashback - sum_close_cashback
+        return Response({'client':list_sts_client,'sum_price':sum_price,'sum_cashback':sum_cashback,'sum_close_cashback':sum_close_cashback,'separete_cashaback':separete_cashaback})

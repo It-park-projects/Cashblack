@@ -77,10 +77,7 @@ class CreateSotrutnikView(APIView):
         us = CustumUsers.objects.filter(username=username)
         if len(us)!=0:
             return Response({'error':"Bunday foydalanuvchi mavjud"},status=status.HTTP_203_NON_AUTHORITATIVE_INFORMATION)
-        try:
-            s = Shops.objects.get(user_id=request.user.id)
-        except Shops.DoesNotExist:
-            s = None
+        s = Shops.objects.filter(user_id=request.user.id)[0]
         my_user = CustumUsers.objects.create(username=username,first_name=first_name,last_name=last_name,)
         my_user.set_password(password)
         my_user.save_product()
@@ -241,5 +238,6 @@ class ShopsClientViews(APIView):
         user = CustumUsers.objects.filter(shops_id=shop.id)
         serializers = ShopsClientSerializers(user,many=True)
         return Response(serializers.data,status=status.HTTP_200_OK)
+
 
 

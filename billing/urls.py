@@ -9,5 +9,6 @@ urlpatterns = [
 
     path('payment_send_card/',PaymentSendCard.as_view()),
     path('payment_confirm_card/',PaymentConfirmCard.as_view()),
+    path('close_balance/',CloseBalance.as_view())
     
 ]
